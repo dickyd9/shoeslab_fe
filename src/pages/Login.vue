@@ -44,14 +44,15 @@
       'after:hidden after:xl:block after:content-[\'\'] after:w-[57%] after:-mt-[20%] after:-mb-[13%] after:-ml-[13%] after:absolute after:inset-y-0 after:left-0 after:transform after:rotate-[-4.5deg] after:bg-primary after:rounded-[100%] after:dark:bg-darkmode-700',
     ]"> -->
   <div
-    class="relative h-screen lg:overflow-hidden bg-primary xl:bg-white dark:bg-darkmode-800 xl:dark:bg-darkmode-600">
+    class="bck-image grid justify-items-center h-screen lg:overflow-hidden bg-cover bg-no-repeat overflow-hidden dark:bg-darkmode-800 xl:dark:bg-darkmode-600">
     <!-- <DarkModeSwitcher />
     <MainColorSwitcher /> -->
-    <div
-      class="container grid items-center mt-10 relative z-10 sm:px-10 max-w-xl p-6 bg-black bg-opacity-5 border border-gray-200 rounded-lg shadow dark:bg-darkmode-300 xl:dark:bg-darkmode-300">
-      <!-- <div> -->
-      <!-- BEGIN: Login Info -->
-      <!-- <div class="flex-col hidden min-h-screen xl:flex">
+    <div class="grid justify-items-center content-center">
+      <div
+        class="container grid h-fit content-center justify-items-center z-10 sm:px-10 max-w-xl p-6 bg-[#f1f1f1ce] border rounded-lg shadow dark:bg-darkmode-300 xl:dark:bg-darkmode-300">
+        <!-- <div> -->
+        <!-- BEGIN: Login Info -->
+        <!-- <div class="flex-col hidden min-h-screen xl:flex">
           <a href="" class="flex items-center pt-5 -intro-x">
             <img
               alt="Midone Tailwind HTML Admin Template"
@@ -75,63 +76,63 @@
             </div>
           </div>
         </div> -->
-      <!-- END: Login Info -->
-      <!-- </div> -->
-      <!-- BEGIN: Login Form -->
-      <form
-        @submit.prevent="onSubmit"
-        class="flex justify-center items-center py-5 my-10 xl:h-auto xl:py-0 xl:my-0">
-        <!-- w-full flex flex-col items-center justify-center px-5 py-8 mx-auto my-auto bg-white rounded-md shadow-md xl:ml-20 dark:bg-darkmode-600 xl:bg-transparent sm:px-8 xl:p-0 xl:shadow-none sm:w-3/4 lg:w-2/4 xl:w-auto -->
-        <div class="grow items-center align-middle">
-          <div class="grid justify-items-center">
-            <h2
-              class="text-2xl font-bold text-center intro-x xl:text-3xl xl:text-left">
-              Shoeslab
-            </h2>
+        <!-- END: Login Info -->
+        <!-- </div> -->
+        <!-- BEGIN: Login Form -->
+        <form
+          @submit.prevent="onSubmit"
+          class="grid gap-4 content-center justify-items-center items-center py-5 my-10 xl:h-auto xl:py-0 xl:my-0">
+          <div class="mb-4">
             <h2
               class="text-2xl font-bold text-center intro-x xl:text-3xl xl:text-left">
               Sign In
             </h2>
           </div>
-          <div class="mt-8 intro-x">
-            <FormInput
-              v-model="FormInput.email"
-              type="text"
-              class="block px-4 py-3 intro-x login__input min-w-full xl:min-w-[350px]"
-              placeholder="Email" />
-            <FormInput
-              v-model="FormInput.password"
-              type="password"
-              class="block px-4 py-3 mt-4 intro-x login__input min-w-full xl:min-w-[350px]"
-              placeholder="Password" />
-          </div>
-          <!-- <div
-            class="flex mt-4 text-xs intro-x text-slate-600 dark:text-slate-500 sm:text-sm">
-            <div class="flex items-center mr-auto">
-              <FormCheck.Input
-                id="remember-me"
-                type="checkbox"
-                class="mr-2 border" />
-              <label class="cursor-pointer select-none" htmlFor="remember-me">
-                Remember me
-              </label>
+          <div class="flex gap-4 justify-center">
+            <img class="w-44 bg-black" src="../assets/images/logo-dark-2.png" />
+            <!-- w-full flex flex-col items-center justify-center px-5 py-8 mx-auto my-auto bg-white rounded-md shadow-md xl:ml-20 dark:bg-darkmode-600 xl:bg-transparent sm:px-8 xl:p-0 xl:shadow-none sm:w-3/4 lg:w-2/4 xl:w-auto -->
+            <div class="grow items-center justify-items-center content-center">
+              <div class="intro-x">
+                <FormInput
+                  v-model="FormInput.email"
+                  type="text"
+                  class="block px-4 py-3 intro-x login__input min-w-full xl:min-w-[350px]"
+                  placeholder="Email" />
+                <FormInput
+                  v-model="FormInput.password"
+                  type="password"
+                  class="block px-4 py-3 mt-4 intro-x login__input min-w-full xl:min-w-[350px]"
+                  placeholder="Password" />
+              </div>
+              <!-- <div
+              class="flex mt-4 text-xs intro-x text-slate-600 dark:text-slate-500 sm:text-sm">
+              <div class="flex items-center mr-auto">
+                <FormCheck.Input
+                  id="remember-me"
+                  type="checkbox"
+                  class="mr-2 border" />
+                <label class="cursor-pointer select-none" htmlFor="remember-me">
+                  Remember me
+                </label>
+              </div>
+              <a href="">Forgot Password?</a>
+            </div> -->
+              <div class="mt-5 text-center intro-x xl:mt-8 xl:text-left">
+                <Button
+                  variant="primary"
+                  class="w-full px-4 py-3 align-top xl:w-32 xl:mr-3">
+                  Login
+                </Button>
+                <!-- <Button
+                  variant="secondary"
+                  class="w-full px-4 py-3 mt-3 align-top xl:w-32 xl:mt-0">
+                  Register
+                </Button> -->
+              </div>
             </div>
-            <a href="">Forgot Password?</a>
-          </div> -->
-          <div class="mt-5 text-center intro-x xl:mt-8 xl:text-left">
-            <Button
-              variant="primary"
-              class="w-full px-4 py-3 align-top xl:w-32 xl:mr-3">
-              Login
-            </Button>
-            <Button
-              variant="outline-secondary"
-              class="w-full px-4 py-3 mt-3 align-top xl:w-32 xl:mt-0">
-              Register
-            </Button>
           </div>
           <div
-            class="mt-10 text-center intro-x xl:mt-24 text-slate-600 dark:text-slate-500 xl:text-left">
+            class="text-center intro-x xl:mt-4 text-slate-600 dark:text-slate-500 xl:text-left">
             By signin up, you agree to our
             <a class="text-primary dark:text-slate-200" href="">
               Terms and Conditions
@@ -141,9 +142,17 @@
               Privacy Policy
             </a>
           </div>
-        </div>
-      </form>
-      <!-- END: Login Form -->
+        </form>
+        <!-- END: Login Form -->
+      </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+  .bck-image {
+    background-image: url("../assets/images/d2.jpg");
+    background-size: cover;
+    box-shadow: inset 0 0 0 2000px rgba(51, 51, 51, 0.3);
+  }
+</style>

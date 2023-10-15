@@ -19,6 +19,7 @@
   const emits = defineEmits()
   const props = defineProps({
     headerFooterModalPreview: Boolean,
+    isEdit: Boolean
   })
 
   const closeModal = () => {
@@ -26,7 +27,6 @@
   }
 
   const sendButtonRef = ref(null)
-  const isEdit = ref(false)
 
   const form = reactive({
     productImage: null,
@@ -81,30 +81,15 @@
 <template>
   <Dialog
     :open="props.headerFooterModalPreview"
+    size="lg"
     @close="closeModal"
     :initialFocus="sendButtonRef">
     <Dialog.Panel>
       <Dialog.Title>
         <h2 class="mr-auto text-base font-medium">Add Product</h2>
-
-        <Button
-          type="button"
-          variant="outline-secondary"
-          @click="closeModal"
-          class="w-20 mr-1">
-          Cancel
-        </Button>
-        <Button
-          @click="saveData"
-          variant="primary"
-          type="button"
-          class="w-20"
-          ref="{sendButtonRef}">
-          Send
-        </Button>
       </Dialog.Title>
-      <Dialog.Description class="grid grid-cols-12 gap-4 gap-y-3">
-        <div class="col-span-12 sm:col-span-12">
+      <Dialog.Description class="flex justify-center gap-4 gap-y-3">
+        <div class="w-1/2 col-span-12 sm:col-span-12">
           <FormLabel htmlFor="modal-form-1">Product Image</FormLabel>
           <file-pond
             ref="pond"
@@ -136,33 +121,50 @@
             </Dropzone>
           </Preview.Panel> -->
         </div>
-        <div class="col-span-12 sm:col-span-12">
-          <FormLabel htmlFor="modal-form-1">Product Name</FormLabel>
-          <FormInput
-            v-model="form.productName"
-            id="productName"
-            type="text"
-            placeholder="Product Name" />
-        </div>
-        <div class="col-span-12 sm:col-span-12">
-          <FormLabel htmlFor="modal-form-2">Product Price</FormLabel>
-          <FormInput
-            v-model="form.productPrice"
-            id="productPrice"
-            type="number"
-            placeholder="Product price" />
-        </div>
-        <div class="col-span-12 sm:col-span-12">
-          <FormLabel htmlFor="modal-form-3"> Product Link </FormLabel>
-          <FormInput
-            v-model="form.productLink"
-            id="productList"
-            type="text"
-            placeholder="Product Link" />
+        <div class="grid gap-4 col-span-12 sm:col-span-12">
+          <div class="col-span-12 sm:col-span-12">
+            <FormLabel htmlFor="modal-form-1">Product Name</FormLabel>
+            <FormInput
+              v-model="form.productName"
+              id="productName"
+              type="text"
+              placeholder="Product Name" />
+          </div>
+          <div class="col-span-12 sm:col-span-12">
+            <FormLabel htmlFor="modal-form-2">Product Price</FormLabel>
+            <FormInput
+              v-model="form.productPrice"
+              id="productPrice"
+              type="number"
+              placeholder="Product price" />
+          </div>
+          <div class="col-span-12 sm:col-span-12">
+            <FormLabel htmlFor="modal-form-3"> Product Link </FormLabel>
+            <FormInput
+              v-model="form.productLink"
+              id="productList"
+              type="text"
+              placeholder="Product Link" />
+          </div>
         </div>
       </Dialog.Description>
-      <!-- <Dialog.Footer>
-      </Dialog.Footer> -->
+      <Dialog.Footer>
+        <Button
+          type="button"
+          variant="outline-secondary"
+          @click="closeModal"
+          class="w-20 mr-1">
+          Cancel
+        </Button>
+        <Button
+          @click="saveData"
+          variant="primary"
+          type="button"
+          class="w-20"
+          ref="{sendButtonRef}">
+          Send
+        </Button>
+      </Dialog.Footer>
     </Dialog.Panel>
   </Dialog>
 </template>
