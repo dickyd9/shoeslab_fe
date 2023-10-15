@@ -55,5 +55,29 @@ export const useAuthStore = defineStore({
     setAuthUser(user: IUser | null) {
       this.authUser = user
     },
+    async logout() {
+      try {
+        // Lakukan permintaan untuk logout ke server (revoke token)
+        const token = JSON.parse(localStorage.getItem("access_token") || "")
+        // await fetchWrapper.post(`${baseUrl}/signOut`, {
+        //   headers: {
+        //     Authorization: `Bearer ${token.auth}`,
+        //   },
+        // })
+
+        // Hapus data autentikasi dari localStorage
+        localStorage.removeItem("access_token")
+        localStorage.removeItem("user_data")
+
+        // Hapus data pengguna dari toko autentikasi
+        this.authUser = null
+
+        // Redirect ke halaman login atau halaman lain yang sesuai
+        router.push("/login")
+      } catch (error) {
+        // Tangani kesalahan jika gagal logout
+        console.error("Gagal logout:", error)
+      }
+    },
   },
 })

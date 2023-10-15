@@ -25,6 +25,10 @@
     productLink: string
   }
 
+  let formatprice = (value: any) => {
+    return value.toString().replace(/(\d)(?=(\d{3})+(?:\.\d+)?$)/g, "$1\.")
+  }
+
   let listProduct = ref<Product[]>([])
 
   const loadProduct = async () => {
@@ -43,6 +47,10 @@
   }
 
   const deleteButtonRef = ref(null)
+
+  const getImage = (val: any) => {
+    return `${import.meta.env.VITE_API_URL}${val}`
+  }
 </script>
 
 <template>
@@ -99,7 +107,7 @@
           <div class="h-40 overflow-hidden rounded-md">
             <ImageZoom
               alt="Midone Tailwind HTML Admin Template"
-              :src="'http://localhost:5000' + data.productImage"
+              :src="getImage(data.productImage)"
               class="rounded-md" />
           </div>
           <div class="mt-5 text-slate-600 dark:text-slate-500">
@@ -108,8 +116,8 @@
             </div>
 
             <div class="flex items-center mt-2">
-              <Lucide icon="Link" class="w-4 h-4 mr-2" /> Price: Rp.
-              {{ data?.productPrice }}
+              <Lucide icon="Link" class="w-4 h-4 mr-2" /> Price: Rp
+              {{ formatprice(data?.productPrice) }}
             </div>
 
             <!-- <div class="flex items-center mt-2">

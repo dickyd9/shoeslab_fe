@@ -38,8 +38,15 @@
       listBlogs.value = res.data as Blogs[]
     })
   })
-  const detailBlog = () => {
-    router.push({ name: "blog-preview" })
+  const detailBlog = (val: number) => {
+    router.push({ name: "blog-preview", params: { id: val } })
+  }
+  const formatDate = (dateString: any) => {
+    const date = new Date(dateString)
+    // Then specify how you want your dates to be formatted
+    return new Intl.DateTimeFormat("default", { dateStyle: "long" }).format(
+      date
+    )
   }
 </script>
 
@@ -131,7 +138,7 @@
             <Table.Td
               class="first:rounded-l-md last:rounded-r-md w-40 bg-white border-b-0 dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b]">
               <a href="" class="font-medium whitespace-nowrap">
-                {{ $filters.formatDate(blog.createdAt) }}
+                {{ formatDate(blog.createdAt) }}
               </a>
             </Table.Td>
             <Table.Td
@@ -152,7 +159,7 @@
                 <a
                   class="flex items-center mr-5 text-primary whitespace-nowrap"
                   href="#"
-                  @click="detailBlog">
+                  @click="detailBlog(blog.id)">
                   <Lucide icon="CheckSquare" class="w-4 h-4 mr-1" />
                   View Details
                 </a>

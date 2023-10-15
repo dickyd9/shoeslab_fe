@@ -78,6 +78,7 @@ import Chart from "../pages/Chart.vue"
 import Slider from "../pages/Slider.vue"
 import ImageZoom from "../pages/ImageZoom.vue"
 
+import UserList from "../pages/users/UserList.vue"
 import Blogs from "../pages/blogs/BlogView.vue"
 import BlogList from "../pages/blogs/BlogList.vue"
 import BlogPrev from "../pages/blogs/BlogPreview.vue"
@@ -113,9 +114,14 @@ const routes = [
         component: BlogList,
       },
       {
-        path: "blog-preview",
+        path: "blog-preview/:id",
         name: "blog-preview",
         component: BlogPrev,
+      },
+      {
+        path: "user-list",
+        name: "user-list",
+        component: UserList,
       },
       {
         path: "product-list",
@@ -140,6 +146,11 @@ const routes = [
       {
         path: "paket-usaha-list",
         name: "paket-usaha-list",
+        component: ProductGrid,
+      },
+      {
+        path: "chanel-video",
+        name: "chanel",
         component: ProductGrid,
       },
 

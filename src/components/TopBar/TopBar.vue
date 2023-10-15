@@ -1,27 +1,39 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import Lucide from "../../base-components/Lucide";
-import Breadcrumb from "../../base-components/Breadcrumb";
-import { FormInput } from "../../base-components/Form";
-import { Menu, Popover } from "../../base-components/Headless";
-import fakerData from "../../utils/faker";
-import _ from "lodash";
-import { TransitionRoot } from "@headlessui/vue";
+  import { ref } from "vue"
+  import Lucide from "../../base-components/Lucide"
+  import Breadcrumb from "../../base-components/Breadcrumb"
+  import { FormInput } from "../../base-components/Form"
+  import { Menu, Popover } from "../../base-components/Headless"
+  import fakerData from "../../utils/faker"
+  import _ from "lodash"
+  import { TransitionRoot } from "@headlessui/vue"
+  import { useAuthStore } from "../../stores/auth.store"
+  import { createToast } from "mosha-vue-toastify"
 
-const searchDropdown = ref(false);
-const showSearchDropdown = () => {
-  searchDropdown.value = true;
-};
-const hideSearchDropdown = () => {
-  searchDropdown.value = false;
-};
+  const searchDropdown = ref(false)
+  const showSearchDropdown = () => {
+    searchDropdown.value = true
+  }
+  const hideSearchDropdown = () => {
+    searchDropdown.value = false
+  }
+
+  const authStore = useAuthStore()
+
+  const logout = () => {
+    authStore.logout().then(() => {
+      createToast(`Logout berhasil`, {
+        type: "success",
+        timeout: 2000,
+      })
+    })
+  }
 </script>
 
 <template>
   <!-- BEGIN: Top Bar -->
   <div
-    class="h-[67px] z-[51] flex items-center relative border-b border-slate-200"
-  >
+    class="h-[67px] z-[51] flex items-center relative border-b border-slate-200">
     <!-- BEGIN: Breadcrumb -->
     <Breadcrumb class="hidden mr-auto -intro-x sm:flex">
       <Breadcrumb.Link to="/">Application</Breadcrumb.Link>
@@ -37,12 +49,10 @@ const hideSearchDropdown = () => {
           class="border-transparent w-56 shadow-none rounded-full bg-slate-300/50 pr-8 transition-[width] duration-300 ease-in-out focus:border-transparent focus:w-72 dark:bg-darkmode-400/70"
           placeholder="Search..."
           @focus="showSearchDropdown"
-          @blur="hideSearchDropdown"
-        />
+          @blur="hideSearchDropdown" />
         <Lucide
           icon="Search"
-          class="absolute inset-y-0 right-0 w-5 h-5 my-auto mr-3 text-slate-600 dark:text-slate-500"
-        />
+          class="absolute inset-y-0 right-0 w-5 h-5 my-auto mr-3 text-slate-600 dark:text-slate-500" />
       </div>
       <a class="relative text-slate-600 sm:hidden" href="">
         <Lucide icon="Search" class="w-5 h-5 dark:text-slate-500" />
@@ -56,32 +66,28 @@ const hideSearchDropdown = () => {
         entered="mt-[3px]"
         leave="transition-all ease-linear duration-150"
         leaveFrom="mt-[3px] visible opacity-100 translate-y-0"
-        leaveTo="mt-5 invisible opacity-0 translate-y-1"
-      >
+        leaveTo="mt-5 invisible opacity-0 translate-y-1">
         <div class="absolute right-0 z-10 mt-[3px]">
           <div class="w-[450px] p-5 box">
             <div class="mb-2 font-medium">Pages</div>
             <div class="mb-5">
               <a href="" class="flex items-center">
                 <div
-                  class="flex items-center justify-center w-8 h-8 rounded-full bg-success/20 dark:bg-success/10 text-success"
-                >
+                  class="flex items-center justify-center w-8 h-8 rounded-full bg-success/20 dark:bg-success/10 text-success">
                   <Lucide icon="Inbox" class="w-4 h-4" />
                 </div>
                 <div class="ml-3">Mail Settings</div>
               </a>
               <a href="" class="flex items-center mt-2">
                 <div
-                  class="flex items-center justify-center w-8 h-8 rounded-full bg-pending/10 text-pending"
-                >
+                  class="flex items-center justify-center w-8 h-8 rounded-full bg-pending/10 text-pending">
                   <Lucide icon="Users" class="w-4 h-4" />
                 </div>
                 <div class="ml-3">Users & Permissions</div>
               </a>
               <a href="" class="flex items-center mt-2">
                 <div
-                  class="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 dark:bg-primary/20 text-primary/80"
-                >
+                  class="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 dark:bg-primary/20 text-primary/80">
                   <Lucide icon="CreditCard" class="w-4 h-4" />
                 </div>
                 <div class="ml-3">Transactions Report</div>
@@ -93,19 +99,16 @@ const hideSearchDropdown = () => {
                 v-for="(faker, fakerKey) in _.take(fakerData, 4)"
                 :key="fakerKey"
                 href=""
-                class="flex items-center mt-2"
-              >
+                class="flex items-center mt-2">
                 <div class="w-8 h-8 image-fit">
                   <img
                     alt="Midone Tailwind HTML Admin Template"
                     class="rounded-full"
-                    :src="faker.photos[0]"
-                  />
+                    :src="faker.photos[0]" />
                 </div>
                 <div class="ml-3">{{ faker.users[0].name }}</div>
                 <div
-                  class="w-48 ml-auto text-xs text-right truncate text-slate-500"
-                >
+                  class="w-48 ml-auto text-xs text-right truncate text-slate-500">
                   {{ faker.users[0].email }}
                 </div>
               </a>
@@ -115,19 +118,16 @@ const hideSearchDropdown = () => {
               v-for="(faker, fakerKey) in _.take(fakerData, 4)"
               :key="fakerKey"
               href=""
-              class="flex items-center mt-2"
-            >
+              class="flex items-center mt-2">
               <div class="w-8 h-8 image-fit">
                 <img
                   alt="Midone Tailwind HTML Admin Template"
                   class="rounded-full"
-                  :src="faker.images[0]"
-                />
+                  :src="faker.images[0]" />
               </div>
               <div class="ml-3">{{ faker.products[0].name }}</div>
               <div
-                class="w-48 ml-auto text-xs text-right truncate text-slate-500"
-              >
+                class="w-48 ml-auto text-xs text-right truncate text-slate-500">
                 {{ faker.products[0].category }}
               </div>
             </a>
@@ -140,8 +140,7 @@ const hideSearchDropdown = () => {
     <!-- BEGIN: Notifications -->
     <Popover class="mr-auto intro-x sm:mr-6">
       <Popover.Button
-        class="relative text-slate-600 outline-none block before:content-[''] before:w-[8px] before:h-[8px] before:rounded-full before:absolute before:top-[-2px] before:right-0 before:bg-danger"
-      >
+        class="relative text-slate-600 outline-none block before:content-[''] before:w-[8px] before:h-[8px] before:rounded-full before:absolute before:top-[-2px] before:right-0 before:bg-danger">
         <Lucide icon="Bell" class="w-5 h-5 dark:text-slate-500" />
       </Popover.Button>
       <Popover.Panel class="w-[280px] sm:w-[350px] p-5 mt-2">
@@ -152,17 +151,14 @@ const hideSearchDropdown = () => {
           :class="[
             'cursor-pointer relative flex items-center',
             { 'mt-5': fakerKey },
-          ]"
-        >
+          ]">
           <div class="relative flex-none w-12 h-12 mr-1 image-fit">
             <img
               alt="Midone Tailwind HTML Admin Template"
               class="rounded-full"
-              :src="faker.photos[0]"
-            />
+              :src="faker.photos[0]" />
             <div
-              class="absolute bottom-0 right-0 w-3 h-3 border-2 border-white rounded-full bg-success dark:border-darkmode-600"
-            ></div>
+              class="absolute bottom-0 right-0 w-3 h-3 border-2 border-white rounded-full bg-success dark:border-darkmode-600"></div>
           </div>
           <div class="ml-2 overflow-hidden">
             <div class="flex items-center">
@@ -181,16 +177,14 @@ const hideSearchDropdown = () => {
       </Popover.Panel>
     </Popover>
     <!-- END: Notifications  -->
-    
+
     <!-- BEGIN: Account Menu -->
     <Menu>
       <Menu.Button
-        class="block w-8 h-8 overflow-hidden rounded-full shadow-lg image-fit zoom-in intro-x"
-      >
+        class="block w-8 h-8 overflow-hidden rounded-full shadow-lg image-fit zoom-in intro-x">
         <img
           alt="Midone Tailwind HTML Admin Template"
-          :src="fakerData[9].photos[0]"
-        />
+          :src="fakerData[9].photos[0]" />
       </Menu.Button>
       <Menu.Items class="w-56 mt-px text-white bg-primary">
         <Menu.Header class="font-normal">
@@ -213,7 +207,7 @@ const hideSearchDropdown = () => {
           <Lucide icon="HelpCircle" class="w-4 h-4 mr-2" /> Help
         </Menu.Item>
         <Menu.Divider class="bg-white/[0.08]" />
-        <Menu.Item class="hover:bg-white/5">
+        <Menu.Item class="hover:bg-white/5" @click="logout">
           <Lucide icon="ToggleRight" class="w-4 h-4 mr-2" /> Logout
         </Menu.Item>
       </Menu.Items>
