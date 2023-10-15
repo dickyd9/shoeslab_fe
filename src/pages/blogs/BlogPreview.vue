@@ -19,7 +19,7 @@
     createdAt: Date
   }
 
-  let detailBlog = ref<Blog>()
+  let detailBlog = ref<Blog | null>(null)
 
   const route = useRoute()
   const blogId = ref(route.params.id)
@@ -28,12 +28,30 @@
     return `${import.meta.env.VITE_API_URL}${val}`
   }
 
-  const formatDate = (dateString: any) => {
-    const date = new Date(dateString)
-    // Then specify how you want your dates to be formatted
-    return new Intl.DateTimeFormat("default", { dateStyle: "long" }).format(
-      date
-    )
+  function formatDate(val: any) {
+    const namaBulan = [
+      "Januari",
+      "Februari",
+      "Maret",
+      "April",
+      "Mei",
+      "Juni",
+      "Juli",
+      "Agustus",
+      "September",
+      "Oktober",
+      "November",
+      "Desember",
+    ]
+    const tanggal = new Date(val)
+    const hari = tanggal.getDate().toString().padStart(2, "0")
+    const bulan = tanggal.getMonth()
+    const bulanText = namaBulan[bulan]
+    const tahun = tanggal.getFullYear()
+    const jam = tanggal.getHours().toString().padStart(2, "0")
+    const menit = tanggal.getMinutes().toString().padStart(2, "0")
+    const detik = tanggal.getSeconds().toString().padStart(2, "0")
+    return `${hari} ${bulanText} ${tahun} ${jam}:${menit}`
   }
 
   onMounted(async () => {
@@ -58,10 +76,10 @@
         <Lucide icon="ArrowLeft" class="w-4 h-4 mr-2" />
         Back
       </Button>
-      <Button @click="editBlog" variant="primary" class="mr-2 shadow-md">
+      <!-- <Button @click="editBlog" variant="primary" class="mr-2 shadow-md">
         <Lucide icon="Pencil" class="w-4 h-4 mr-2" />
         Edit
-      </Button>
+      </Button> -->
     </div>
   </div>
   <div class="p-5 mt-8 intro-y xl:w-full box">
@@ -71,7 +89,7 @@
     </h2>
     <div
       class="mt-3 text-xs intro-y text-slate-600 dark:text-slate-500 sm:text-sm">
-      {{ detailBlog?.createdAt }} <span class="mx-1">•</span>
+      {{ formatDate(detailBlog?.createdAt) }} <span class="mx-1">•</span>
     </div>
     <div class="mt-6 intro-y">
       <div class="h-[250px] md:h-[400px] image-fit">
@@ -82,7 +100,7 @@
       </div>
     </div>
     <div class="mt-10 leading-relaxed text-justify intro-y indent-[30px]">
-      <p class="mb-5">{{ detailBlog?.blogDesc }}</p>
+      <p class="mb-5" v-html="detailBlog?.blogDesc" />
     </div>
     <!-- END: Blog Layout -->
   </div>

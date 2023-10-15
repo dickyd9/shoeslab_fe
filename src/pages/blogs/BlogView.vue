@@ -21,6 +21,7 @@
   const router = useRouter()
 
   const form = reactive({
+    blogImage: null,
     blogTitle: null,
     blogDesc: "",
     blogStatus: false,
@@ -28,21 +29,33 @@
 
   const initialFormData = { ...form }
 
+  import vueFilePond from "vue-filepond"
+  import "filepond/dist/filepond.min.css"
+  import FilePondPluginImagePreview from "filepond-plugin-image-preview"
+  const FilePond = vueFilePond(FilePondPluginImagePreview)
+  const pondOptions = {
+    allowMultiple: true, // Atur sesuai kebutuhan
+    acceptedFileTypes: ["image/*", "application/pdf"], // Atur sesuai kebutuhan
+  }
+  const onAddFile = (error: any, val: any) => {
+    form.blogImage = val.file
+  }
+
   const saveData = async () => {
     let formData = new FormData()
 
-    // if (form.productImage !== null) {
-    //   const file = new File([form.productImage], "nama_file.jpg", {
-    //     type: "image/jpeg",
-    //   })
-    //   formData.append("productImage", file)
-    // }
+    if (form.blogImage !== null) {
+      const file = new File([form.blogImage], "blog.jpg", {
+        type: "image/jpeg",
+      })
+      formData.append("blogImage", file)
+    }
 
-    formData.append("productName", String(form.blogTitle))
-    formData.append("productPrice", String(form.blogDesc))
-    formData.append("productLink", String(form.blogStatus))
+    formData.append("blogTitle", String(form.blogTitle))
+    formData.append("blogDesc", String(form.blogDesc))
+    formData.append("blogStatus", String(form.blogStatus))
 
-    await fetchWrapper.post("blog", form).then((res: any) => {
+    await fetchWrapper.post("blog", formData).then((res: any) => {
       backToList()
       createToast(res.message, {
         type: "success",
@@ -354,6 +367,16 @@
           </FormSwitch.Label>
           <FormSwitch.Input id="post-form-5" type="checkbox" />
         </FormSwitch> -->
+        <div class="col-span-12 sm:col-span-12">
+          <FormLabel htmlFor="modal-form-1">Blog Image</FormLabel>
+          <file-pond
+            ref="pond"
+            v-bind="pondOptions"
+            name="image"
+            label-idle="Drop files here..."
+            accepted-file-types="image/jpeg, image/png"
+            @addfile="onAddFile" />
+        </div>
         <FormSwitch class="flex flex-col items-start mt-3">
           <FormSwitch.Label htmlFor="post-form-6" class="mb-2 ml-0">
             Blog Status

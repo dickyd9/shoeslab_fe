@@ -45,8 +45,8 @@
     ]"> -->
   <div
     class="relative h-screen lg:overflow-hidden bg-primary xl:bg-white dark:bg-darkmode-800 xl:dark:bg-darkmode-600">
-    <DarkModeSwitcher />
-    <MainColorSwitcher />
+    <!-- <DarkModeSwitcher />
+    <MainColorSwitcher /> -->
     <div
       class="container grid items-center mt-10 relative z-10 sm:px-10 max-w-xl p-6 bg-black bg-opacity-5 border border-gray-200 rounded-lg shadow dark:bg-darkmode-300 xl:dark:bg-darkmode-300">
       <!-- <div> -->

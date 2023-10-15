@@ -46,6 +46,13 @@
     deleteConfirmationModal.value = value
   }
 
+  const dataProduct = ref<Product | null>(null)
+  const deleteProduct = async () => {
+    await fetchWrapper.get(`product/${dataProduct}`).then((res) => {
+      listProduct.value = res.data as Product[]
+    })
+  }
+
   const deleteButtonRef = ref(null)
 
   const getImage = (val: any) => {
@@ -140,6 +147,7 @@
               (event) => {
                 event.preventDefault()
                 setDeleteConfirmationModal(true)
+                dataProduct = data
               }
             ">
             <Lucide icon="Trash2" class="w-4 h-4 mr-1" /> Delete
@@ -195,8 +203,7 @@
       () => {
         setDeleteConfirmationModal(false)
       }
-    "
-    :initialFocus="deleteButtonRef">
+    ">
     <Dialog.Panel>
       <div class="p-5 text-center">
         <Lucide icon="XCircle" class="w-16 h-16 mx-auto mt-3 text-danger" />

@@ -56,8 +56,8 @@ onMounted(() => {
   <div
     class="py-5 md:py-0 -mx-3 px-3 sm:-mx-8 sm:px-8 bg-black/[0.15] dark:bg-transparent"
   >
-    <DarkModeSwitcher />
-    <MainColorSwitcher />
+    <!-- <DarkModeSwitcher />
+    <MainColorSwitcher /> -->
     <MobileMenu />
     <div class="flex mt-[4.7rem] md:mt-0 overflow-hidden">
       <!-- BEGIN: Simple Menu -->
@@ -69,7 +69,7 @@ onMounted(() => {
           class="flex items-center pt-4 pl-5 mt-3 intro-x"
         >
           <img
-            alt="Tinker Tailwind HTML Admin Template"
+            alt="Shoeslab"
             class="w-6"
             :src="logoUrl"
           />
