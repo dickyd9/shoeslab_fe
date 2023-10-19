@@ -5,7 +5,7 @@ import router from "../router"
 import axios from "axios"
 
 // const baseUrl = `${import.meta.env.VITE_API_URL}`
-const baseUrl = "http://localhost:5000/v1"
+const baseUrl = "https://shoeslab.id/v1"
 export type AuthStoreState = {
   authUser: IUser | null
   access_token: IUser | null
