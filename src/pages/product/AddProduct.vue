@@ -9,7 +9,7 @@
   import { Menu, Dialog } from "../../base-components/Headless"
   import Button from "../../base-components/Button"
   import Dropzone, { DropzoneElement } from "../../base-components/Dropzone"
-  import { onMounted, reactive, ref } from "vue"
+  import { onMounted, reactive, ref, watch } from "vue"
   import fetchWrapper from "../../helper/fetch-wrapper"
   import { createToast } from "mosha-vue-toastify"
 
@@ -19,7 +19,7 @@
   const emits = defineEmits()
   const props = defineProps({
     headerFooterModalPreview: Boolean,
-    isEdit: Boolean
+    editData: Object,
   })
 
   const closeModal = () => {
@@ -28,8 +28,8 @@
 
   const sendButtonRef = ref(null)
 
-  const form = reactive({
-    productImage: null,
+  let form = reactive({
+    productImage: null as string | null,
     productName: null,
     productPrice: null,
     productLink: null,
@@ -41,7 +41,13 @@
   const FilePond = vueFilePond(FilePondPluginImagePreview)
   const pondOptions = {
     allowMultiple: true, // Atur sesuai kebutuhan
-    acceptedFileTypes: ["image/*", "application/pdf"], // Atur sesuai kebutuhan
+    acceptedFileTypes: ["image/*", "application/pdf"], //
+    onload: (response: any) => {
+      // Tangani respons dari server setelah gambar diunggah
+      // Di sini, Anda dapat mengambil URL gambar dari respons dan menyimpannya ke form.productImage
+      console.log(response)
+      // form.productImage = imageUrl
+    },
   }
   const myFiles = ref([])
 
@@ -72,6 +78,19 @@
   const onAddFile = (error: any, val: any) => {
     form.productImage = val.file
   }
+
+  watch(
+    () => props.editData,
+    (newValue) => {
+      if (newValue) {
+        // Mengganti nilai form dengan nilai dari prop 'editData'
+        form.productImage = `'https://shoeslab.id' ${newValue.productImage}`
+        form.productName = newValue.productName
+        form.productPrice = newValue.productPrice
+        form.productLink = newValue.productLink
+      }
+    }
+  )
 
   // onMounted(() => {
   //   console.log(myFiles)

@@ -7,8 +7,8 @@ import Button from "../base-components/Button";
 
 <template>
   <div class="py-2">
-    <DarkModeSwitcher />
-    <MainColorSwitcher />
+    <!-- <DarkModeSwitcher />
+    <MainColorSwitcher /> -->
     <div class="container">
       <!-- BEGIN: Error Page -->
       <div

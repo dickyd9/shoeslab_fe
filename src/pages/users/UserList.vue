@@ -2,6 +2,7 @@
   import _ from "lodash"
   import fakerData from "../../utils/faker"
   import Button from "../../base-components/Button"
+  import DialogUser from "./DialogUser.vue"
   import Pagination from "../../base-components/Pagination"
   import { FormInput, FormSelect } from "../../base-components/Form"
   import Lucide from "../../base-components/Lucide"
@@ -26,6 +27,8 @@
     })
   }
 
+  const dialog = ref(false)
+
   onMounted(() => {
     loadUser()
   })
@@ -36,8 +39,8 @@
   <div class="grid grid-cols-12 gap-6 mt-5">
     <div
       class="flex flex-wrap items-center col-span-12 mt-2 intro-y sm:flex-nowrap">
-      <Button variant="primary" class="mr-2 shadow-md"> Add New User </Button>
-      <div class="hidden mx-auto md:block text-slate-500">
+      <Button @click="dialog = true" variant="primary" class="mr-2 shadow-md"> Add New User </Button>
+      <!-- <div class="hidden mx-auto md:block text-slate-500">
         Showing 1 to 10 of 150 entries
       </div>
       <div class="w-full mt-3 sm:w-auto sm:mt-0 sm:ml-auto md:ml-0">
@@ -50,7 +53,7 @@
             icon="Search"
             class="absolute inset-y-0 right-0 w-4 h-4 my-auto mr-3" />
         </div>
-      </div>
+      </div> -->
     </div>
     <!-- BEGIN: Users Layout -->
     <div
@@ -60,11 +63,6 @@
       <div class="box">
         <div class="flex items-start px-5 pt-5">
           <div class="flex flex-col items-center w-full lg:flex-row">
-            <div class="w-16 h-16 image-fit">
-              <img
-                alt="Midone Tailwind HTML Admin Template"
-                class="rounded-full" />
-            </div>
             <div class="mt-3 text-center lg:ml-4 lg:text-left lg:mt-0">
               <a href="" class="font-medium"> {{ user.fullname }} </a>
               <div class="text-slate-500 text-xs mt-0.5">
@@ -98,12 +96,12 @@
             {{ user.address }}
           </div>
         </div>
-        <div
+        <!-- <div
           class="p-5 text-center border-t lg:text-right border-slate-200/60 dark:border-darkmode-400">
           <Button variant="outline-secondary" class="px-2 py-1">
             Profile
           </Button>
-        </div>
+        </div> -->
       </div>
     </div>
     <!-- END: Users Layout -->
@@ -138,4 +136,14 @@
     </div>
     <!-- END: Pagination -->
   </div>
+
+  <DialogUser
+    :show-dialog="dialog"
+    @update:close="
+      () => {
+        dialog = false
+        loadUser()
+      }
+    "
+  />
 </template>

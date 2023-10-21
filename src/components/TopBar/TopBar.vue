@@ -1,5 +1,6 @@
 <script setup lang="ts">
-  import { ref } from "vue"
+  import { useRoute, useRouter } from "vue-router"
+  import { onMounted, ref } from "vue"
   import Lucide from "../../base-components/Lucide"
   import Breadcrumb from "../../base-components/Breadcrumb"
   import { FormInput } from "../../base-components/Form"
@@ -9,6 +10,8 @@
   import { TransitionRoot } from "@headlessui/vue"
   import { useAuthStore } from "../../stores/auth.store"
   import { createToast } from "mosha-vue-toastify"
+  import fetchWrapper from "../../helper/fetch-wrapper"
+  import { DateTime } from "litepicker/dist/types/datetime"
 
   const searchDropdown = ref(false)
   const showSearchDropdown = () => {
@@ -20,6 +23,8 @@
 
   const authStore = useAuthStore()
 
+  const user = JSON.parse(localStorage.getItem("user_data") || "")
+
   const logout = () => {
     authStore.logout().then(() => {
       createToast(`Logout berhasil`, {
@@ -28,6 +33,7 @@
       })
     })
   }
+  const route = useRoute()
 </script>
 
 <template>
@@ -36,13 +42,15 @@
     class="h-[67px] z-[51] flex items-center relative border-b border-slate-200">
     <!-- BEGIN: Breadcrumb -->
     <Breadcrumb class="hidden mr-auto -intro-x sm:flex">
-      <Breadcrumb.Link to="/">Application</Breadcrumb.Link>
-      <Breadcrumb.Link to="/" :active="true"> Dashboard </Breadcrumb.Link>
+      <Breadcrumb.Link>Dashboard</Breadcrumb.Link>
+      <Breadcrumb.Link :to="route.path" :active="true">
+        {{ route.name }}
+      </Breadcrumb.Link>
     </Breadcrumb>
     <!-- END: Breadcrumb -->
 
     <!-- BEGIN: Search -->
-    <div class="relative mr-3 intro-x sm:mr-6">
+    <!-- <div class="relative mr-3 intro-x sm:mr-6">
       <div class="relative hidden sm:block">
         <FormInput
           type="text"
@@ -134,11 +142,11 @@
           </div>
         </div>
       </TransitionRoot>
-    </div>
+    </div> -->
     <!-- END: Search  -->
 
     <!-- BEGIN: Notifications -->
-    <Popover class="mr-auto intro-x sm:mr-6">
+    <!-- <Popover class="mr-auto intro-x sm:mr-6">
       <Popover.Button
         class="relative text-slate-600 outline-none block before:content-[''] before:w-[8px] before:h-[8px] before:rounded-full before:absolute before:top-[-2px] before:right-0 before:bg-danger">
         <Lucide icon="Bell" class="w-5 h-5 dark:text-slate-500" />
@@ -175,38 +183,36 @@
           </div>
         </div>
       </Popover.Panel>
-    </Popover>
+    </Popover> -->
     <!-- END: Notifications  -->
 
     <!-- BEGIN: Account Menu -->
     <Menu>
       <Menu.Button
         class="block w-8 h-8 overflow-hidden rounded-full shadow-lg image-fit zoom-in intro-x">
-        <img
-          alt="Midone Tailwind HTML Admin Template"
-          :src="fakerData[9].photos[0]" />
+        <img alt="Midone Tailwind HTML Admin Template" src="../../assets/images/UserImage.png" />
       </Menu.Button>
       <Menu.Items class="w-56 mt-px text-white bg-primary">
         <Menu.Header class="font-normal">
-          <div class="font-medium">{{ fakerData[0].users[0].name }}</div>
+          <div class="font-medium">{{ user.fullname }}</div>
           <div class="text-xs text-white/70 mt-0.5 dark:text-slate-500">
-            {{ fakerData[0].jobs[0] }}
+            {{ user.role }}
           </div>
         </Menu.Header>
         <Menu.Divider class="bg-white/[0.08]" />
-        <Menu.Item class="hover:bg-white/5">
+        <!-- <Menu.Item class="hover:bg-white/5">
           <Lucide icon="User" class="w-4 h-4 mr-2" /> Profile
-        </Menu.Item>
-        <Menu.Item class="hover:bg-white/5">
+        </Menu.Item> -->
+        <!-- <Menu.Item class="hover:bg-white/5">
           <Lucide icon="Edit" class="w-4 h-4 mr-2" /> Add Account
-        </Menu.Item>
-        <Menu.Item class="hover:bg-white/5">
+        </Menu.Item> -->
+        <!-- <Menu.Item class="hover:bg-white/5">
           <Lucide icon="Lock" class="w-4 h-4 mr-2" /> Reset Password
-        </Menu.Item>
-        <Menu.Item class="hover:bg-white/5">
+        </Menu.Item> -->
+        <!-- <Menu.Item class="hover:bg-white/5">
           <Lucide icon="HelpCircle" class="w-4 h-4 mr-2" /> Help
-        </Menu.Item>
-        <Menu.Divider class="bg-white/[0.08]" />
+        </Menu.Item> -->
+        <!-- <Menu.Divider class="bg-white/[0.08]" /> -->
         <Menu.Item class="hover:bg-white/5" @click="logout">
           <Lucide icon="ToggleRight" class="w-4 h-4 mr-2" /> Logout
         </Menu.Item>

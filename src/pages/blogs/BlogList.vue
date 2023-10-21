@@ -55,7 +55,7 @@
   <div class="grid grid-cols-12 gap-6 mt-5">
     <div
       class="flex flex-wrap items-center col-span-12 mt-2 intro-y xl:flex-nowrap">
-      <div class="flex w-full sm:w-auto">
+      <div class="flex justify-space-between w-full sm:w-auto">
         <div class="relative w-48 text-slate-500">
           <FormInput
             type="text"
@@ -72,7 +72,6 @@
         </FormSelect>
       </div>
       <div class="hidden mx-auto xl:block text-slate-500">
-        Showing 1 to 10 of 150 entries
       </div>
       <div class="flex items-center w-full mt-3 xl:w-auto xl:mt-0">
         <Button @click="addNewBlogs" variant="primary" class="mr-2 shadow-md">

@@ -4,8 +4,8 @@ import fetchWrapper from "../helper/fetch-wrapper"
 import router from "../router"
 import axios from "axios"
 
-// const baseUrl = `${import.meta.env.VITE_API_URL}`
-const baseUrl = "https://shoeslab.id/v1"
+const baseUrl = `${import.meta.env.VITE_API_URL}`
+// const baseUrl = "http://localhost:3000/v1"
 export type AuthStoreState = {
   authUser: IUser | null
   access_token: IUser | null

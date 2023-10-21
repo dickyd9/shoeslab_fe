@@ -63,8 +63,8 @@ onMounted(() => {
   <div
     class="py-5 md:py-0 -mx-3 px-3 sm:-mx-8 sm:px-8 bg-black/[0.15] dark:bg-transparent"
   >
-    <DarkModeSwitcher />
-    <MainColorSwitcher />
+    <!-- <DarkModeSwitcher />
+    <MainColorSwitcher /> -->
     <MobileMenu />
     <!-- BEGIN: Top Bar -->
     <div

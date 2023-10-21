@@ -77,16 +77,16 @@ export const useSideMenuStore = defineStore("sideMenu", {
         pageName: "user-list",
         title: "Users",
       },
-      {
-        icon: "Image",
-        pageName: "image-list",
-        title: "Images",
-      },
-      {
-        icon: "Youtube",
-        pageName: "chanel",
-        title: "Chanel Video",
-      },
+      // {
+      //   icon: "Image",
+      //   pageName: "image-list",
+      //   title: "Images",
+      // },
+      // {
+      //   icon: "Youtube",
+      //   pageName: "chanel",
+      //   title: "Chanel Video",
+      // },
 
       // {
       //   icon: "Home",

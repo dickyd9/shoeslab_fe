@@ -7,6 +7,8 @@
   import Button from "../base-components/Button"
   import { useAuthStore } from "../stores/auth.store"
   import { createToast } from "mosha-vue-toastify"
+  import Lucide from "../base-components/Lucide"
+  import { ref } from "vue"
 
   const authStore = useAuthStore()
 
@@ -33,6 +35,11 @@
           timeout: 2000,
         })
       })
+  }
+
+  const isShow = ref(false)
+  const showPassword = () => {
+    isShow.value = !isShow.value
   }
 </script>
 
@@ -82,29 +89,41 @@
         <form
           @submit.prevent="onSubmit"
           class="grid gap-4 content-center justify-items-center items-center py-5 my-10 xl:h-auto xl:py-0 xl:my-0">
-          <div class="mb-4">
+          <div class="mb-4 grid justify-items-center">
+            <img class="w-44 bg-black" src="../assets/images/logo-dark-2.png" />
+
             <h2
               class="text-2xl font-bold text-center intro-x xl:text-3xl xl:text-left">
               Sign In
             </h2>
           </div>
-          <div class="flex gap-4 justify-center">
-            <img class="w-44 bg-black" src="../assets/images/logo-dark-2.png" />
-            <!-- w-full flex flex-col items-center justify-center px-5 py-8 mx-auto my-auto bg-white rounded-md shadow-md xl:ml-20 dark:bg-darkmode-600 xl:bg-transparent sm:px-8 xl:p-0 xl:shadow-none sm:w-3/4 lg:w-2/4 xl:w-auto -->
-            <div class="grow items-center justify-items-center content-center">
-              <div class="intro-x">
-                <FormInput
-                  v-model="FormInput.email"
-                  type="text"
-                  class="block px-4 py-3 intro-x login__input min-w-full xl:min-w-[350px]"
-                  placeholder="Email" />
+          <!-- w-full flex flex-col items-center justify-center px-5 py-8 mx-auto my-auto bg-white rounded-md shadow-md xl:ml-20 dark:bg-darkmode-600 xl:bg-transparent sm:px-8 xl:p-0 xl:shadow-none sm:w-3/4 lg:w-2/4 xl:w-auto -->
+          <div class="grid items-center justify-items-center content-center">
+            <div class="intro-x">
+              <FormInput
+                v-model="FormInput.email"
+                type="text"
+                class="block px-4 py-3 intro-x login__input min-w-full xl:min-w-[350px]"
+                placeholder="Email" />
+              <div
+                style="position: relative;"
+              >
                 <FormInput
                   v-model="FormInput.password"
-                  type="password"
+                  :type="isShow ? 'text' : 'password'"
                   class="block px-4 py-3 mt-4 intro-x login__input min-w-full xl:min-w-[350px]"
                   placeholder="Password" />
+
+                <button class="showPassword" 
+                  @click.prevent="showPassword"
+                >
+                  <Lucide
+                    :icon="isShow ? 'Eye' : 'EyeOff'"
+                    class="w-4 h-4 mr-2" />
+                </button>
               </div>
-              <!-- <div
+            </div>
+            <!-- <div
               class="flex mt-4 text-xs intro-x text-slate-600 dark:text-slate-500 sm:text-sm">
               <div class="flex items-center mr-auto">
                 <FormCheck.Input
@@ -117,30 +136,18 @@
               </div>
               <a href="">Forgot Password?</a>
             </div> -->
-              <div class="mt-5 text-center intro-x xl:mt-8 xl:text-left">
-                <Button
-                  variant="primary"
-                  class="w-full px-4 py-3 align-top xl:w-32 xl:mr-3">
-                  Login
-                </Button>
-                <!-- <Button
+            <div class="mt-5 text-center intro-x xl:mt-8 xl:text-left">
+              <Button
+                variant="primary"
+                class="w-full px-4 py-3 align-top xl:w-32 xl:mr-3">
+                Login
+              </Button>
+              <!-- <Button
                   variant="secondary"
                   class="w-full px-4 py-3 mt-3 align-top xl:w-32 xl:mt-0">
                   Register
                 </Button> -->
-              </div>
             </div>
-          </div>
-          <div
-            class="text-center intro-x xl:mt-4 text-slate-600 dark:text-slate-500 xl:text-left">
-            By signin up, you agree to our
-            <a class="text-primary dark:text-slate-200" href="">
-              Terms and Conditions
-            </a>
-            &
-            <a class="text-primary dark:text-slate-200" href="">
-              Privacy Policy
-            </a>
           </div>
         </form>
         <!-- END: Login Form -->
@@ -154,5 +161,13 @@
     background-image: url("../assets/images/d2.jpg");
     background-size: cover;
     box-shadow: inset 0 0 0 2000px rgba(51, 51, 51, 0.3);
+  }
+
+  .showPassword {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin-top: 15px;
+    z-index: 1000;
   }
 </style>

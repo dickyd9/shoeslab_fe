@@ -76,7 +76,7 @@ onMounted(() => {
           <img
             alt="Shoeslab"
             class="w-6"
-            :src="logoUrl"
+            src="../../assets/images/logo-dark-2.png"
           />
           <span class="hidden ml-3 text-lg text-white xl:block"> Shoeslab </span>
         </RouterLink>

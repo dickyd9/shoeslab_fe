@@ -15,11 +15,12 @@ module.exports = {
       pattern: /animate-delay-.+/,
     },
   ],
-  darkMode: "class",
+  darkMode: "true",
   theme: {
     extend: {
       colors: {
-        primary: "rgb(var(--color-primary) / <alpha-value>)",
+        // primary: "rgb(var(--color-primary) / <alpha-value>)",
+        primary: "#111827",
         secondary: "rgb(var(--color-secondary) / <alpha-value>)",
         success: "rgb(var(--color-success) / <alpha-value>)",
         info: "rgb(var(--color-info) / <alpha-value>)",

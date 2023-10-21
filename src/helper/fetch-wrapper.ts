@@ -1,7 +1,8 @@
 import axios from "axios"
 
 const axiosInstance = axios.create({
-  baseURL: 'https://shoeslab.id/v1/', // Ganti dengan URL API Anda
+  baseURL: 'https://shoeslab.id/v1/',
+  // baseURL: 'http://localhost:3000/v1/',
 })
 
 export default {

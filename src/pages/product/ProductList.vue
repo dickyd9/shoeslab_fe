@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import _ from "lodash"
-  import { computed, onMounted, ref } from "vue"
+  import { computed, onMounted, reactive, ref } from "vue"
   import fakerData from "../../utils/faker"
   import Button from "../../base-components/Button"
   import Pagination from "../../base-components/Pagination"
@@ -11,6 +11,7 @@
   import AddProduct from "./AddProduct.vue"
   import fetchWrapper from "../../helper/fetch-wrapper"
   import { useProductStore } from "../../stores/product.store"
+import { createToast } from "mosha-vue-toastify"
 
   const productData = useProductStore()
 
@@ -25,16 +26,31 @@
     productLink: string
   }
 
+  interface MetaData {
+    totalData: number
+    limit: number
+    totalPages: number
+    page: number
+  }
+
   let formatprice = (value: any) => {
     return value.toString().replace(/(\d)(?=(\d{3})+(?:\.\d+)?$)/g, "$1\.")
   }
 
   let listProduct = ref<Product[]>([])
+  let meta = ref<MetaData>()
 
   const loadProduct = async () => {
     await fetchWrapper.get("product").then((res) => {
       listProduct.value = res.data as Product[]
+      meta.value = res.meta
     })
+  }
+
+  let editProduct = reactive({})
+  const editData = async (val: object) => {
+    addProduct.value = true
+    editProduct = val
   }
 
   onMounted(() => {
@@ -48,8 +64,13 @@
 
   const dataProduct = ref<Product | null>(null)
   const deleteProduct = async () => {
-    await fetchWrapper.get(`product/${dataProduct}`).then((res) => {
-      listProduct.value = res.data as Product[]
+    await fetchWrapper.delete(`product/${dataProduct.value?.id}`).then((res) => {
+      createToast(res.message, {
+        type: "success",
+        timeout: 2000,
+      })
+      deleteConfirmationModal.value = false
+      loadProduct()
     })
   }
 
@@ -90,10 +111,10 @@
         </Menu.Items>
       </Menu> -->
       <div class="hidden mx-auto md:block text-slate-500">
-        Showing 1 to 10 of 150 entries
+        Showing 1 to {{ meta?.limit }} of {{ meta?.totalData }} entries
       </div>
       <div class="w-full mt-3 sm:w-auto sm:mt-0 sm:ml-auto md:ml-0">
-        <div class="relative w-56 text-slate-500">
+        <!-- <div class="relative w-56 text-slate-500">
           <FormInput
             type="text"
             class="w-56 pr-10 !box"
@@ -101,7 +122,7 @@
           <Lucide
             icon="Search"
             class="absolute inset-y-0 right-0 w-4 h-4 my-auto mr-3" />
-        </div>
+        </div> -->
       </div>
     </div>
     <!-- BEGIN: Users Layout -->
@@ -113,7 +134,7 @@
         <div class="p-5">
           <div class="h-40 overflow-hidden rounded-md">
             <ImageZoom
-              alt="Midone Tailwind HTML Admin Template"
+              alt="Shoeslab|images|product"
               :src="getImage(data.productImage)"
               class="rounded-md" />
           </div>
@@ -137,7 +158,10 @@
           <!-- <a class="flex items-center mr-auto text-primary" href="#">
             <Lucide icon="Eye" class="w-4 h-4 mr-1" /> Preview
           </a> -->
-          <a class="flex items-center mr-3" href="#">
+          <a class="flex items-center mr-3" href="#" @click="(event) => {
+              event.preventDefault()
+              editData(data)
+            }">
             <Lucide icon="CheckSquare" class="w-4 h-4 mr-1" /> Edit
           </a>
           <a
@@ -190,8 +214,10 @@
 
   <AddProduct
     :headerFooterModalPreview="addProduct"
+    :editData="editProduct"
     @update:close="
       (val) => {
+        editProduct = reactive({})
         addProduct = val
         loadProduct()
       }
@@ -229,6 +255,7 @@
           variant="danger"
           type="button"
           class="w-24"
+          @click="deleteProduct"
           ref="deleteButtonRef">
           Delete
         </Button>
