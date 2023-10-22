@@ -11,7 +11,7 @@
   import AddProduct from "./AddProduct.vue"
   import fetchWrapper from "../../helper/fetch-wrapper"
   import { useProductStore } from "../../stores/product.store"
-import { createToast } from "mosha-vue-toastify"
+  import { createToast } from "mosha-vue-toastify"
 
   const productData = useProductStore()
 
@@ -53,6 +53,8 @@ import { createToast } from "mosha-vue-toastify"
     editProduct = val
   }
 
+  let isEdit = ref(false)
+
   onMounted(() => {
     loadProduct()
   })
@@ -64,14 +66,16 @@ import { createToast } from "mosha-vue-toastify"
 
   const dataProduct = ref<Product | null>(null)
   const deleteProduct = async () => {
-    await fetchWrapper.delete(`product/${dataProduct.value?.id}`).then((res) => {
-      createToast(res.message, {
-        type: "success",
-        timeout: 2000,
+    await fetchWrapper
+      .delete(`product/${dataProduct.value?.id}`)
+      .then((res) => {
+        createToast(res.message, {
+          type: "success",
+          timeout: 2000,
+        })
+        deleteConfirmationModal.value = false
+        loadProduct()
       })
-      deleteConfirmationModal.value = false
-      loadProduct()
-    })
   }
 
   const deleteButtonRef = ref(null)
@@ -158,10 +162,16 @@ import { createToast } from "mosha-vue-toastify"
           <!-- <a class="flex items-center mr-auto text-primary" href="#">
             <Lucide icon="Eye" class="w-4 h-4 mr-1" /> Preview
           </a> -->
-          <a class="flex items-center mr-3" href="#" @click="(event) => {
-              event.preventDefault()
-              editData(data)
-            }">
+          <a
+            class="flex items-center mr-3"
+            href="#"
+            @click="
+              (event) => {
+                event.preventDefault()
+                isEdit = true
+                editData(data)
+              }
+            ">
             <Lucide icon="CheckSquare" class="w-4 h-4 mr-1" /> Edit
           </a>
           <a
@@ -215,9 +225,11 @@ import { createToast } from "mosha-vue-toastify"
   <AddProduct
     :headerFooterModalPreview="addProduct"
     :editData="editProduct"
+    :isEdit="isEdit"
     @update:close="
       (val) => {
         editProduct = reactive({})
+        isEdit = false
         addProduct = val
         loadProduct()
       }

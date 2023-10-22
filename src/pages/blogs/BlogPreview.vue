@@ -65,7 +65,10 @@
   }
 
   const editBlog = () => {
-    router.push({ name: "detail-blog" })
+    localStorage.setItem("detailBlog", JSON.stringify(detailBlog.value))
+    router.push({
+      name: "detail-blog-edit",
+    })
   }
 </script>
 
@@ -76,10 +79,10 @@
         <Lucide icon="ArrowLeft" class="w-4 h-4 mr-2" />
         Back
       </Button>
-      <!-- <Button @click="editBlog" variant="primary" class="mr-2 shadow-md">
+      <Button @click="editBlog" variant="primary" class="mr-2 shadow-md">
         <Lucide icon="Pencil" class="w-4 h-4 mr-2" />
         Edit
-      </Button> -->
+      </Button>
     </div>
   </div>
   <div class="p-5 mt-8 intro-y xl:w-full box">

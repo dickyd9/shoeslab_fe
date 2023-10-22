@@ -18,11 +18,14 @@
 
   const emits = defineEmits()
   const props = defineProps({
+    isEdit: Boolean,
     headerFooterModalPreview: Boolean,
     editData: Object,
   })
 
   const closeModal = () => {
+    myFiles.value = []
+    initialFormData
     emits("update:close", false)
   }
 
@@ -41,15 +44,15 @@
   const FilePond = vueFilePond(FilePondPluginImagePreview)
   const pondOptions = {
     allowMultiple: true, // Atur sesuai kebutuhan
-    acceptedFileTypes: ["image/*", "application/pdf"], //
+    acceptedFileTypes: "image/jpeg, image/png",
     onload: (response: any) => {
+      console.log(response)
       // Tangani respons dari server setelah gambar diunggah
       // Di sini, Anda dapat mengambil URL gambar dari respons dan menyimpannya ke form.productImage
-      console.log(response)
+      // console.log(response)
       // form.productImage = imageUrl
     },
   }
-  const myFiles = ref([])
 
   const saveData = async () => {
     let formData = new FormData()
@@ -64,15 +67,27 @@
     formData.append("productName", String(form.productName))
     formData.append("productPrice", String(form.productPrice)) // Anda perlu mengonversi ke string
     formData.append("productLink", String(form.productLink))
-
-    await fetchWrapper.post("product", formData).then((res: any) => {
-      closeModal()
-      createToast(res.message, {
-        type: "success",
-        timeout: 2000,
+    if (props.isEdit) {
+      await fetchWrapper
+        .put(`product/${props.editData?.id}`, formData)
+        .then((res: any) => {
+          closeModal()
+          createToast(res.message, {
+            type: "success",
+            timeout: 2000,
+          })
+          Object.assign(form, initialFormData)
+        })
+    } else {
+      await fetchWrapper.post("product", formData).then((res: any) => {
+        closeModal()
+        createToast(res.message, {
+          type: "success",
+          timeout: 2000,
+        })
+        Object.assign(form, initialFormData)
       })
-      Object.assign(form, initialFormData)
-    })
+    }
   }
 
   const onAddFile = (error: any, val: any) => {
@@ -83,8 +98,7 @@
     () => props.editData,
     (newValue) => {
       if (newValue) {
-        // Mengganti nilai form dengan nilai dari prop 'editData'
-        form.productImage = `'https://shoeslab.id' ${newValue.productImage}`
+        form.productImage = `https://shoeslab.id${newValue.productImage}`
         form.productName = newValue.productName
         form.productPrice = newValue.productPrice
         form.productLink = newValue.productLink
@@ -92,9 +106,32 @@
     }
   )
 
-  // onMounted(() => {
-  //   console.log(myFiles)
-  // })
+  const myFiles = ref<File[]>([])
+  const imageUrl = `https://shoeslab.id${props.editData?.productImage}`
+  const loadImage = async () => {
+    await fetch(imageUrl)
+      .then((response) => {
+        if (response.ok) {
+          return response.blob()
+        }
+        throw new Error("Gagal mengambil gambar")
+      })
+      .then((imageBlob) => {
+        const imageFile = new File([imageBlob], "image.jpg", {
+          type: "image/jpeg",
+        })
+        myFiles.value = [imageFile]
+      })
+      .catch((error) => {
+        console.error(error)
+      })
+  }
+
+  watch(props, (newValue) => {
+    if (newValue.isEdit) {
+      loadImage()
+    }
+  })
 </script>
 
 <template>
@@ -105,7 +142,9 @@
     :initialFocus="sendButtonRef">
     <Dialog.Panel>
       <Dialog.Title>
-        <h2 class="mr-auto text-base font-medium">Add Product</h2>
+        <h2 class="mr-auto text-base font-medium">
+          {{ props.isEdit ? "Edit Product" : "Add Product" }}
+        </h2>
       </Dialog.Title>
       <Dialog.Description class="flex justify-center gap-4 gap-y-3">
         <div class="w-1/2 col-span-12 sm:col-span-12">
@@ -115,7 +154,6 @@
             v-bind="pondOptions"
             name="image"
             label-idle="Drop files here..."
-            accepted-file-types="image/jpeg, image/png"
             v-bind:files="myFiles"
             @addfile="onAddFile" />
           <!-- <Preview.Panel>

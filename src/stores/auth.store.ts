@@ -3,6 +3,7 @@ import { defineStore } from "pinia"
 import fetchWrapper from "../helper/fetch-wrapper"
 import router from "../router"
 import axios from "axios"
+import { createToast } from "mosha-vue-toastify"
 
 const baseUrl = `${import.meta.env.VITE_API_URL}/v1`
 // const baseUrl = "https://shoeslab.id/v1"
@@ -22,13 +23,12 @@ export const useAuthStore = defineStore({
     } as AuthStoreState),
   actions: {
     async login(email: string, password: string) {
-      this.access_token = await fetchWrapper.post(`${baseUrl}/signIn`, {
+      const res = await fetchWrapper.post(`${baseUrl}/signIn`, {
         email,
         password,
       })
-
       // store access_token details and jwt in local storage to keep access_token logged in between page refreshes
-      localStorage.setItem("access_token", JSON.stringify(this.access_token))
+      localStorage.setItem("access_token", JSON.stringify(res))
 
       // redirect to previous url or default to home page
       router.push(this.returnUrl || "/dashboard")

@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import _ from "lodash"
-  import { onMounted, ref } from "vue"
+  import { onMounted, reactive, ref } from "vue"
   import fakerData from "../../utils/faker"
   import Button from "../../base-components/Button"
   import Pagination from "../../base-components/Pagination"
@@ -10,12 +10,7 @@
   import Table from "../../base-components/Table"
   import { useRouter } from "vue-router"
   import fetchWrapper from "../../helper/fetch-wrapper"
-
-  const deleteConfirmationModal = ref(false)
-  const setDeleteConfirmationModal = (value: boolean) => {
-    deleteConfirmationModal.value = value
-  }
-  const deleteButtonRef = ref(null)
+  import { createToast } from "mosha-vue-toastify"
 
   const router = useRouter()
 
@@ -33,11 +28,35 @@
 
   let listBlogs = ref<Blogs[]>([])
 
-  onMounted(async () => {
-    await fetchWrapper.get("blog").then((res) => {
+  const deleteConfirmationModal = ref(false)
+  const setDeleteConfirmationModal = (value: boolean) => {
+    deleteConfirmationModal.value = value
+  }
+  const dataBlog = ref<Blogs | null>(null)
+  const deleteButtonRef = ref(null)
+  const deleteBlog = async () => {
+    console.log('blog')
+    await fetchWrapper.delete(`blog/${dataBlog.value?.id}`).then((res) => {
+      createToast(res.message, {
+        type: "success",
+        timeout: 2000,
+      })
+      deleteConfirmationModal.value = false
+      getData()
+    })
+  }
+
+  const param = ref(null)
+  const getData = async () => {
+    await fetchWrapper.get("blog", { keyword: param.value }).then((res) => {
       listBlogs.value = res.data as Blogs[]
     })
+  }
+
+  onMounted(async () => {
+    await getData()
   })
+
   const detailBlog = (val: number) => {
     router.push({ name: "blog-preview", params: { id: val } })
   }
@@ -56,23 +75,23 @@
     <div
       class="flex flex-wrap items-center col-span-12 mt-2 intro-y xl:flex-nowrap">
       <div class="flex justify-space-between w-full sm:w-auto">
-        <div class="relative w-48 text-slate-500">
+        <form @submit.prevent="getData()" class="relative w-48 text-slate-500">
           <FormInput
+            v-model="param"
             type="text"
             class="w-48 pr-10 !box"
             placeholder="Search ..." />
           <Lucide
             icon="Search"
             class="absolute inset-y-0 right-0 w-4 h-4 my-auto mr-3" />
-        </div>
+        </form>
         <FormSelect class="ml-2 !box">
           <option>Status</option>
           <option>Active</option>
           <option>Inactive</option>
         </FormSelect>
       </div>
-      <div class="hidden mx-auto xl:block text-slate-500">
-      </div>
+      <div class="hidden mx-auto xl:block text-slate-500"></div>
       <div class="flex items-center w-full mt-3 xl:w-auto xl:mt-0">
         <Button @click="addNewBlogs" variant="primary" class="mr-2 shadow-md">
           <!-- <Lucide icon="FileText" class="w-4 h-4 mr-2" />  -->
@@ -162,6 +181,18 @@
                   <Lucide icon="CheckSquare" class="w-4 h-4 mr-1" />
                   View Details
                 </a>
+                <a
+                  class="flex items-center text-danger"
+                  href="#"
+                  @click="
+                    (event) => {
+                      event.preventDefault()
+                      setDeleteConfirmationModal(true)
+                      dataBlog = blog
+                    }
+                  ">
+                  <Lucide icon="Trash2" class="w-4 h-4 mr-1" /> Delete
+                </a>
               </div>
             </Table.Td>
           </Table.Tr>
@@ -234,6 +265,7 @@
           variant="danger"
           type="button"
           class="w-24"
+          @click="deleteBlog"
           ref="deleteButtonRef">
           Delete
         </Button>

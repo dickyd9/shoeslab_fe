@@ -1,8 +1,7 @@
 import axios from "axios"
 
 const axiosInstance = axios.create({
-  baseURL: 'https://shoeslab.id/v1/',
-  // baseURL: 'http://localhost:3000/v1/',
+  baseURL: `${import.meta.env.VITE_API_URL}/v1`
 })
 
 export default {

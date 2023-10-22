@@ -80,6 +80,7 @@ import ImageZoom from "../pages/ImageZoom.vue"
 
 import UserList from "../pages/users/UserList.vue"
 import Blogs from "../pages/blogs/BlogView.vue"
+import EditBlogs from "../pages/blogs/BlogEdit.vue"
 import BlogList from "../pages/blogs/BlogList.vue"
 import BlogPrev from "../pages/blogs/BlogPreview.vue"
 import ProductLst from "../pages/product/ProductList.vue"
@@ -102,6 +103,11 @@ const routes = [
         path: "dashboard",
         name: "dashboard",
         component: DashboardOverview1,
+      },
+      {
+        path: "edit-blog",
+        name: "detail-blog-edit",
+        component: EditBlogs,
       },
       {
         path: "detail-blog",
@@ -1197,7 +1203,7 @@ router.beforeEach(
     const isHide = to.matched.some((record) => record.meta.hideForAuth)
 
     if (isAuth && !loggedIn) {
-      createToast('Login expired', {
+      createToast("Login expired", {
         type: "danger",
         timeout: 2000,
       })

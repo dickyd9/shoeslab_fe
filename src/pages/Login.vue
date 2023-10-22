@@ -20,21 +20,19 @@
   const formData = FormInput
 
   const onSubmit = async () => {
-    authStore
-      .login(formData.email, formData.password)
-      .then(() => {
-        const user = authStore.getUserWithToken()
-        createToast(`Hello`, {
-          type: "success",
-          timeout: 2000,
-        })
+    try {
+      const res = await authStore.login(formData.email, formData.password)
+      await authStore.getUserWithToken()
+      createToast("Login Success", {
+        type: "success",
+        timeout: 2000,
       })
-      .catch((err) => {
-        createToast(err.response.data.error, {
-          type: "danger",
-          timeout: 2000,
-        })
+    } catch (error: any) {
+      createToast(error.response.data.error || error.message, {
+        type: "danger",
+        timeout: 2000,
       })
+    }
   }
 
   const isShow = ref(false)
@@ -105,18 +103,14 @@
                 type="text"
                 class="block px-4 py-3 intro-x login__input min-w-full xl:min-w-[350px]"
                 placeholder="Email" />
-              <div
-                style="position: relative;"
-              >
+              <div style="position: relative">
                 <FormInput
                   v-model="FormInput.password"
                   :type="isShow ? 'text' : 'password'"
                   class="block px-4 py-3 mt-4 intro-x login__input min-w-full xl:min-w-[350px]"
                   placeholder="Password" />
 
-                <button class="showPassword" 
-                  @click.prevent="showPassword"
-                >
+                <button class="showPassword" @click.stop.prevent="showPassword">
                   <Lucide
                     :icon="isShow ? 'Eye' : 'EyeOff'"
                     class="w-4 h-4 mr-2" />
