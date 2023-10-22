@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import { useRoute, useRouter } from "vue-router"
-  import { onMounted, ref } from "vue"
+  import { computed, onMounted, ref } from "vue"
   import Lucide from "../../base-components/Lucide"
   import Breadcrumb from "../../base-components/Breadcrumb"
   import { FormInput } from "../../base-components/Form"
@@ -23,7 +23,7 @@
 
   const authStore = useAuthStore()
 
-  const user = JSON.parse(localStorage.getItem("user_data") || "")
+  const user = computed(() => authStore.authUser)
 
   const logout = () => {
     authStore.logout().then(() => {
@@ -190,13 +190,15 @@
     <Menu>
       <Menu.Button
         class="block w-8 h-8 overflow-hidden rounded-full shadow-lg image-fit zoom-in intro-x">
-        <img alt="Midone Tailwind HTML Admin Template" src="../../assets/images/UserImage.png" />
+        <img
+          alt="Midone Tailwind HTML Admin Template"
+          src="../../assets/images/UserImage.png" />
       </Menu.Button>
       <Menu.Items class="w-56 mt-px text-white bg-primary">
         <Menu.Header class="font-normal">
-          <div class="font-medium">{{ user.fullname }}</div>
+          <div class="font-medium">{{ user?.fullname }}</div>
           <div class="text-xs text-white/70 mt-0.5 dark:text-slate-500">
-            {{ user.role }}
+            {{ user?.role }}
           </div>
         </Menu.Header>
         <Menu.Divider class="bg-white/[0.08]" />

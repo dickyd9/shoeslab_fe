@@ -4,8 +4,8 @@ import fetchWrapper from "../helper/fetch-wrapper"
 import router from "../router"
 import axios from "axios"
 
-const baseUrl = `${import.meta.env.VITE_API_URL}`
-// const baseUrl = "http://localhost:3000/v1"
+const baseUrl = `${import.meta.env.VITE_API_URL}/v1`
+// const baseUrl = "https://shoeslab.id/v1"
 export type AuthStoreState = {
   authUser: IUser | null
   access_token: IUser | null
@@ -44,9 +44,8 @@ export const useAuthStore = defineStore({
           },
         })
 
-        localStorage.setItem("user_data", JSON.stringify(user.data))
-
         this.authUser = user.data
+        localStorage.setItem("user_data", JSON.stringify(user.data))
       } catch (error) {
         // Tangani kesalahan jika gagal mengambil data pengguna
         console.error("Gagal mengambil data pengguna:", error)

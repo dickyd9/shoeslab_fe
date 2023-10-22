@@ -1,5 +1,10 @@
 export interface IUser {
+  id: number
+  fullname: string
   email: string
+  role: string
+  is_email_verified: Boolean
+  address: string
 }
 
 export interface GenericResponse {
