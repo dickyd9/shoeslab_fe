@@ -86,6 +86,7 @@ import BlogPrev from "../pages/blogs/BlogPreview.vue"
 import ProductLst from "../pages/product/ProductList.vue"
 
 import { createToast } from "mosha-vue-toastify"
+import GalleryList from "../pages/gallery/GalleryList.vue"
 
 const routes = [
   {
@@ -142,7 +143,7 @@ const routes = [
       {
         path: "image-list",
         name: "image-list",
-        component: ProductGrid,
+        component: GalleryList,
       },
       {
         path: "add-paket-usaha",

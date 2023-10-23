@@ -41,10 +41,9 @@
   const sendButtonRef = ref(null)
 
   let form = reactive({
-    productImage: null as string | null,
-    productName: null,
-    productPrice: null,
-    productLink: null,
+    path: null as string | null,
+    title: "",
+    link: "",
   })
 
   const initialFormData = { ...form }
@@ -65,10 +64,10 @@
   }
 
   const rules = {
-    productName: {
+    title: {
       required,
     },
-    productPrice: {
+    link: {
       required,
     },
   }
@@ -80,19 +79,18 @@
     } else {
       let formData = new FormData()
 
-      if (form.productImage !== null) {
-        const file = new File([form.productImage], "nama_file.jpg", {
+      if (form.path !== null) {
+        const file = new File([form.path], "nama_file.jpg", {
           type: "image/jpeg",
         })
-        formData.append("productImage", file)
+        formData.append("path", file)
       }
 
-      formData.append("productName", String(form.productName))
-      formData.append("productPrice", String(form.productPrice)) // Anda perlu mengonversi ke string
-      formData.append("productLink", String(form.productLink))
+      formData.append("title", String(form.title))
+      formData.append("link", String(form.link))
       if (props.isEdit) {
         await fetchWrapper
-          .put(`product/${props.editData?.id}`, formData)
+          .put(`gallery/${props.editData?.id}`, formData)
           .then((res: any) => {
             closeModal()
             createToast(res.message, {
@@ -102,7 +100,7 @@
             Object.assign(form, initialFormData)
           })
       } else {
-        await fetchWrapper.post("product", formData).then((res: any) => {
+        await fetchWrapper.post("gallery", formData).then((res: any) => {
           closeModal()
           createToast(res.message, {
             type: "success",
@@ -115,24 +113,22 @@
   }
 
   const onAddFile = (error: any, val: any) => {
-    form.productImage = val.file
+    form.path = val.file
   }
 
   watch(
     () => props.editData,
     (newValue) => {
       if (newValue) {
-        form.productImage = `https://shoeslab.id${newValue.productImage}`
-        form.productName = newValue.productName
-        form.productPrice = newValue.productPrice
-        form.productLink = newValue.productLink
+        form.title = newValue.title
+        form.link = newValue.link
       }
     }
   )
 
   const myFiles = ref<File[]>([])
   const loadImage = async () => {
-    await fetch(`https://shoeslab.id${props.editData?.productImage}`)
+    await fetch(`https://shoeslab.id${props.editData?.path}`)
       .then((response) => {
         if (response.ok) {
           return response.blob()
@@ -167,7 +163,7 @@
     <Dialog.Panel>
       <Dialog.Title>
         <h2 class="mr-auto text-base font-medium">
-          {{ props.isEdit ? "Edit Product" : "Add Product" }}
+          {{ props.isEdit ? "Edit Image" : "Add Image" }}
         </h2>
       </Dialog.Title>
       <Dialog.Description>
@@ -177,7 +173,7 @@
           <div
             class="overflow-y-auto max-h-[60vh] grid gap-4 col-span-12 sm:col-span-12">
             <div class="col-span-12 sm:col-span-12">
-              <FormLabel htmlFor="modal-form-1">Product Image</FormLabel>
+              <FormLabel htmlFor="modal-form-1">Image</FormLabel>
               <file-pond
                 ref="pond"
                 v-bind="pondOptions"
@@ -187,18 +183,18 @@
                 @addfile="onAddFile" />
             </div>
             <div class="col-span-12 sm:col-span-12">
-              <FormLabel htmlFor="modal-form-1">Product Name</FormLabel>
+              <FormLabel htmlFor="modal-form-1">Image Title</FormLabel>
               <FormInput
-                v-model.trim="validate.productName.$model"
-                id="productName"
+                v-model.trim="validate.title.$model"
+                id="title"
                 type="text"
-                placeholder="Product Name"
+                placeholder="Title"
                 :class="{
-                  'border-danger': validate.productName.$error,
+                  'border-danger': validate.title.$error,
                 }" />
-              <template v-if="validate.productName.$error">
+              <template v-if="validate.title.$error">
                 <div
-                  v-for="(error, index) in validate.productName.$errors"
+                  v-for="(error, index) in validate.title.$errors"
                   :key="index"
                   class="mt-2 text-danger">
                   {{ error.$message }}
@@ -206,31 +202,23 @@
               </template>
             </div>
             <div class="col-span-12 sm:col-span-12">
-              <FormLabel htmlFor="modal-form-2">Product Price</FormLabel>
+              <FormLabel htmlFor="modal-form-1">Link</FormLabel>
               <FormInput
-                v-model.trim="validate.productPrice.$model"
-                id="productPrice"
-                type="number"
-                placeholder="Product price"
+                v-model.trim="validate.link.$model"
+                id="link"
+                type="text"
+                placeholder="link"
                 :class="{
-                  'border-danger': validate.productPrice.$error,
+                  'border-danger': validate.link.$error,
                 }" />
-              <template v-if="validate.productPrice.$error">
+              <template v-if="validate.link.$error">
                 <div
-                  v-for="(error, index) in validate.productName.$errors"
+                  v-for="(error, index) in validate.link.$errors"
                   :key="index"
                   class="mt-2 text-danger">
                   {{ error.$message }}
                 </div>
               </template>
-            </div>
-            <div class="col-span-12 sm:col-span-12">
-              <FormLabel htmlFor="modal-form-3"> Product Link </FormLabel>
-              <FormInput
-                v-model="form.productLink"
-                id="productList"
-                type="text"
-                placeholder="Product Link" />
             </div>
           </div>
 
