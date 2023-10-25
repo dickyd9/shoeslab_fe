@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import _ from "lodash"
-  import { reactive, ref } from "vue"
+  import { reactive, ref, toRefs } from "vue"
   import fakerData from "../../utils/faker"
   import Button from "../../base-components/Button"
   import { FormInput, FormLabel, FormSwitch } from "../../base-components/Form"
@@ -13,6 +13,17 @@
   import { useRouter } from "vue-router"
   import { createToast } from "mosha-vue-toastify"
   import fetchWrapper from "../../helper/fetch-wrapper"
+  import {
+    required,
+    minLength,
+    maxLength,
+    email,
+    url,
+    integer,
+  } from "@vuelidate/validators"
+  import { useVuelidate } from "@vuelidate/core"
+  import Toastify from "toastify-js"
+  import Editor from "@tinymce/tinymce-vue"
 
   const categories = ref(["1", "2"])
   const tags = ref(["1", "2"])
@@ -22,12 +33,21 @@
 
   const form = reactive({
     blogImage: null,
-    blogTitle: null,
+    blogTitle: "" as string | null,
     blogDesc: "",
     blogStatus: false,
   })
 
   const initialFormData = { ...form }
+
+  const rules = {
+    blogTitle: {
+      required,
+      maxLength: maxLength(100),
+    },
+  }
+
+  const validate = useVuelidate(rules, toRefs(form))
 
   import vueFilePond from "vue-filepond"
   import "filepond/dist/filepond.min.css"
@@ -42,7 +62,15 @@
   }
 
   const saveData = async () => {
+    validate.value.$touch()
     let formData = new FormData()
+
+    if (!form.blogTitle) {
+      createToast("Title wajib di isi", {
+        type: "danger",
+        timeout: 2000,
+      })
+    }
 
     if (form.blogImage !== null) {
       const file = new File([form.blogImage], "blog.jpg", {
@@ -55,14 +83,22 @@
     formData.append("blogDesc", String(form.blogDesc))
     formData.append("blogStatus", String(form.blogStatus))
 
-    await fetchWrapper.post("blog", formData).then((res: any) => {
-      backToList()
-      createToast(res.message, {
-        type: "success",
-        timeout: 2000,
+    await fetchWrapper
+      .post("blog", formData)
+      .then((res: any) => {
+        backToList()
+        createToast(res.message, {
+          type: "success",
+          timeout: 2000,
+        })
+        Object.assign(form, initialFormData)
       })
-      Object.assign(form, initialFormData)
-    })
+      .catch((error: any) => {
+        createToast(error.response.data.error, {
+          type: "danger",
+          timeout: 2000,
+        })
+      })
   }
   const backToList = () => {
     router.back()
@@ -104,31 +140,33 @@
           Save
           <!-- <Lucide icon="ChevronDown" class="w-4 h-4 ml-2" /> -->
         </Menu.Button>
-        <!-- <Menu.Items class="w-40">
-          <Menu.Item>
-            <Lucide icon="FileText" class="w-4 h-4 mr-2" /> As New Post
-          </Menu.Item>
-          <Menu.Item>
-            <Lucide icon="FileText" class="w-4 h-4 mr-2" /> As Draft
-          </Menu.Item>
-          <Menu.Item>
-            <Lucide icon="FileText" class="w-4 h-4 mr-2" /> Export to PDF
-          </Menu.Item>
-          <Menu.Item>
-            <Lucide icon="FileText" class="w-4 h-4 mr-2" /> Export to Word
-          </Menu.Item>
-        </Menu.Items> -->
       </Menu>
     </div>
   </div>
   <div class="grid grid-cols-12 gap-5 mt-5 intro-y">
     <!-- BEGIN: Post Content -->
     <div class="col-span-12 intro-y lg:col-span-8">
-      <FormInput
-        v-model="form.blogTitle"
-        type="text"
-        class="px-4 py-3 pr-10 intro-y !box"
-        placeholder="Title" />
+      <div class="grid items-end w-full">
+        <span class="text-end mt-1 text-xs sm:ml-auto sm:mt-0 text-slate-500">
+          {{ form.blogTitle?.length }} / 100
+        </span>
+        <FormInput
+          v-model.trim="validate.blogTitle.$model"
+          type="text"
+          :class="{
+            'border-danger': validate.blogTitle.$error,
+          }"
+          class="px-4 py-3 pr-10 intro-y !box"
+          placeholder="Title" />
+        <template v-if="validate.blogTitle.$error">
+          <div
+            v-for="(error, index) in validate.blogTitle.$errors"
+            :key="index"
+            class="mt-2 text-danger">
+            {{ error.$message }}
+          </div>
+        </template>
+      </div>
       <Tab.Group class="mt-5 overflow-hidden intro-y box">
         <Tab.List
           class="flex-col border-transparent dark:border-transparent sm:flex-row bg-slate-200 dark:bg-darkmode-800">
@@ -215,7 +253,17 @@
                 <Lucide icon="ChevronDown" class="w-4 h-4 mr-2" /> Text Content
               </div>
               <div class="mt-5">
-                <ClassicEditor v-model="form.blogDesc" />
+                <!-- <ClassicEditor v-model="form.blogDesc" /> -->
+                <Editor
+                  v-model="form.blogDesc"
+                  api-key="27awhdl835fck97654lvo0oj7zl9p32aju4655y2x5fhq320"
+                  :init="{
+                    height: 500,
+                    menubar: false,
+                    plugins: 'lists link image emoticons',
+                    toolbar:
+                      'styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist | link image emoticons',
+                  }" />
               </div>
             </div>
             <!-- <div
@@ -285,88 +333,6 @@
     <!-- BEGIN: Post Info -->
     <div class="col-span-12 lg:col-span-4">
       <div class="p-5 intro-y box">
-        <!-- <div>
-          <FormLabel>Written By</FormLabel>
-          <Menu class="[&>div:nth-child(2)]:w-full">
-            <Menu.Button
-              :as="Button"
-              variant="outline-secondary"
-              class="flex items-center justify-start w-full dark:bg-darkmode-800 dark:border-darkmode-800"
-              role="button"
-            >
-              <div class="w-6 h-6 mr-3 image-fit">
-                <img
-                  class="rounded"
-                  alt="Midone Tailwind HTML Admin Template"
-                  :src="fakerData[0].photos[0]"
-                />
-              </div>
-              <div class="truncate">{{ fakerData[0].users[0].name }}</div>
-              <Lucide icon="ChevronDown" class="w-4 h-4 ml-auto" />
-            </Menu.Button>
-            <Menu.Items>
-              <Menu.Item
-                v-for="(faker, fakerKey) in _.take(fakerData, 5)"
-                :key="fakerKey"
-              >
-                <div class="absolute w-6 h-6 mr-3 image-fit">
-                  <img
-                    class="rounded"
-                    alt="Midone Tailwind HTML Admin Template"
-                    :src="faker.photos[0]"
-                  />
-                </div>
-                <div class="pl-1 ml-8">{{ faker.users[0].name }}</div>
-              </Menu.Item>
-            </Menu.Items>
-          </Menu>
-        </div> -->
-        <!-- <div class="mt-3">
-          <FormLabel htmlFor="post-form-2">Post Date</FormLabel>
-          <Litepicker
-            v-model="form.blog"
-            :options="{
-              autoApply: false,
-              showWeekNumbers: true,
-              dropdowns: {
-                minYear: 1990,
-                maxYear: null,
-                months: true,
-                years: true,
-              },
-            }" />
-        </div> -->
-        <!-- <div class="mt-3">
-          <FormLabel htmlFor="post-form-3">Categories</FormLabel>
-          <TomSelect
-            id="post-form-3"
-            v-model="categories"
-            class="w-full"
-            multiple
-          >
-            <option value="1">Horror</option>
-            <option value="2">Sci-fi</option>
-            <option value="3">Action</option>
-            <option value="4">Drama</option>
-            <option value="5">Comedy</option>
-          </TomSelect>
-        </div>
-        <div class="mt-3">
-          <FormLabel htmlFor="post-form-4">Tags</FormLabel>
-          <TomSelect id="post-form-4" v-model="tags" class="w-full" multiple>
-            <option value="1">Leonardo DiCaprio</option>
-            <option value="2">Johnny Deep</option>
-            <option value="3">Robert Downey, Jr</option>
-            <option value="4">Samuel L. Jackson</option>
-            <option value="5">Morgan Freeman</option>
-          </TomSelect>
-        </div> -->
-        <!-- <FormSwitch class="flex flex-col items-start mt-3">
-          <FormSwitch.Label htmlFor="post-form-5" class="mb-2 ml-0">
-            Published
-          </FormSwitch.Label>
-          <FormSwitch.Input id="post-form-5" type="checkbox" />
-        </FormSwitch> -->
         <div class="col-span-12 sm:col-span-12">
           <FormLabel htmlFor="modal-form-1">Blog Image</FormLabel>
           <file-pond

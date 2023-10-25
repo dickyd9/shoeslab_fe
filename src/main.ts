@@ -5,12 +5,15 @@ import router from "./router"
 import "./assets/css/app.css"
 import moshaToast from "mosha-vue-toastify"
 import "mosha-vue-toastify/dist/style.css"
+import { QuillEditor } from "@vueup/vue-quill"
+import "@vueup/vue-quill/dist/vue-quill.snow.css"
 
 import filters from "./helper/filters"
 import { useResetForm } from "./stores/reset.form"
 
 const app = createApp(App)
 
+app.component("QuillEditor", QuillEditor)
 app.use(router)
 app.use(createPinia())
 app.use(moshaToast)

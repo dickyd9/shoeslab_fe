@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import _ from "lodash"
-  import { onMounted, reactive, ref, watch } from "vue"
+  import { onMounted, reactive, ref, watch, toRefs } from "vue"
   import fakerData from "../../utils/faker"
   import Button from "../../base-components/Button"
   import { FormInput, FormLabel, FormSwitch } from "../../base-components/Form"
@@ -14,6 +14,15 @@
   import { createToast } from "mosha-vue-toastify"
   import fetchWrapper from "../../helper/fetch-wrapper"
   import Editor from "@tinymce/tinymce-vue"
+  import {
+    required,
+    minLength,
+    maxLength,
+    email,
+    url,
+    integer,
+  } from "@vuelidate/validators"
+  import { useVuelidate } from "@vuelidate/core"
 
   const categories = ref(["1", "2"])
   const tags = ref(["1", "2"])
@@ -31,6 +40,7 @@
 
   const editorValue = ref("")
   let form = reactive({
+    id: null as number | null,
     blogImage: null as string | null,
     blogTitle: null as string | null,
     blogDesc: "",
@@ -38,6 +48,15 @@
   })
 
   const initialFormData = { ...form }
+
+  const rules = {
+    blogTitle: {
+      required,
+      maxLength: maxLength(100),
+    },
+  }
+
+  const validate = useVuelidate(rules, toRefs(form))
 
   import vueFilePond from "vue-filepond"
   import "filepond/dist/filepond.min.css"
@@ -57,7 +76,15 @@
   ) as Blog
 
   const saveData = async () => {
+    validate.value.$touch()
     let formData = new FormData()
+
+    if (!form.blogTitle) {
+      createToast("Title wajib di isi", {
+        type: "danger",
+        timeout: 2000,
+      })
+    }
 
     if (form.blogImage !== null) {
       const file = new File([form.blogImage], "blog.jpg", {
@@ -79,6 +106,12 @@
           timeout: 2000,
         })
         Object.assign(form, initialFormData)
+      })
+      .catch((error: any) => {
+        createToast(error.response.data.error, {
+          type: "danger",
+          timeout: 2000,
+        })
       })
   }
   const backToList = () => {
@@ -107,9 +140,9 @@
 
   onMounted(() => {
     form.blogImage = `${import.meta.env.VITE_API_URL}${detailBlog.blogImage}`
-    form.blogTitle = detailBlog.blogTitle
-    form.blogDesc = detailBlog.blogDesc
-    form.blogStatus = detailBlog.blogStatus
+    form.blogTitle = detailBlog?.blogTitle || ""
+    form.blogDesc = detailBlog?.blogDesc || ""
+    form.blogStatus = detailBlog?.blogStatus || false
 
     loadImage()
   })
@@ -137,11 +170,27 @@
   <div class="grid grid-cols-12 gap-5 mt-5 intro-y">
     <!-- BEGIN: Post Content -->
     <div class="col-span-12 intro-y lg:col-span-8">
-      <FormInput
-        v-model="form.blogTitle"
-        type="text"
-        class="px-4 py-3 pr-10 intro-y !box"
-        placeholder="Title" />
+      <div class="grid items-end w-full">
+        <span class="text-end mt-1 text-xs sm:ml-auto sm:mt-0 text-slate-500">
+          {{ form.blogTitle?.length }} / 100
+        </span>
+        <FormInput
+          v-model.trim="validate.blogTitle.$model"
+          type="text"
+          :class="{
+            'border-danger': validate.blogTitle.$error,
+          }"
+          class="px-4 py-3 pr-10 intro-y !box"
+          placeholder="Title" />
+        <template v-if="validate.blogTitle.$error">
+          <div
+            v-for="(error, index) in validate.blogTitle.$errors"
+            :key="index"
+            class="mt-2 text-danger">
+            {{ error.$message }}
+          </div>
+        </template>
+      </div>
       <Tab.Group class="mt-5 overflow-hidden intro-y box">
         <Tab.List
           class="flex-col border-transparent dark:border-transparent sm:flex-row bg-slate-200 dark:bg-darkmode-800">
@@ -231,8 +280,9 @@
                 <!-- <ClassicEditor v-model="form.blogDesc" /> -->
                 <Editor
                   v-model="form.blogDesc"
-                  api-key="no-api-key"
+                  api-key="27awhdl835fck97654lvo0oj7zl9p32aju4655y2x5fhq320"
                   :init="{
+                    height: 500,
                     menubar: false,
                     plugins: 'lists link image emoticons',
                     toolbar:
