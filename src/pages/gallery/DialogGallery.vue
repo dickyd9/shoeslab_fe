@@ -44,6 +44,7 @@
     path: null as string | null,
     title: "",
     link: "",
+    size: "small",
   })
 
   const initialFormData = { ...form }
@@ -70,6 +71,9 @@
     link: {
       required,
     },
+    size: {
+      required,
+    },
   }
   const validate = useVuelidate(rules, toRefs(form))
   const saveData = async () => {
@@ -88,6 +92,7 @@
 
       formData.append("title", String(form.title))
       formData.append("link", String(form.link))
+      formData.append("size", String(form.size))
       if (props.isEdit) {
         await fetchWrapper
           .put(`gallery/${props.editData?.id}`, formData)
@@ -122,6 +127,7 @@
       if (newValue) {
         form.title = newValue.title
         form.link = newValue.link
+        form.size = newValue.size
       }
     }
   )
@@ -171,7 +177,7 @@
           class="h-full w-full justify-center gap-4 gap-y-3"
           @submit.prevent="saveData">
           <div
-            class="overflow-y-auto max-h-[60vh] grid gap-4 col-span-12 sm:col-span-12">
+            class="overflow-y-auto max-h-[60vh] mx-2  grid gap-4 col-span-12 sm:col-span-12">
             <div class="col-span-12 sm:col-span-12">
               <FormLabel htmlFor="modal-form-1">Image</FormLabel>
               <file-pond
@@ -219,6 +225,16 @@
                   {{ error.$message }}
                 </div>
               </template>
+            </div>
+            <div class="col-span-12 sm:col-span-12">
+              <FormLabel htmlFor="modal-form-1">Image Size</FormLabel>
+              <FormSelect
+                v-model="form.size"
+                aria-label="Select">
+                <option v-for="item in ['small', 'big']" :value="item">
+                  {{ item }}
+                </option>
+              </FormSelect>
             </div>
           </div>
 

@@ -106,7 +106,7 @@
     </div>
     <!-- END: Users Layout -->
     <!-- BEGIN: Pagination -->
-    <div
+    <!-- <div
       class="flex flex-wrap items-center col-span-12 intro-y sm:flex-row sm:flex-nowrap">
       <Pagination class="w-full sm:w-auto sm:mr-auto">
         <Pagination.Link>
@@ -133,7 +133,7 @@
         <option>35</option>
         <option>50</option>
       </FormSelect>
-    </div>
+    </div> -->
     <!-- END: Pagination -->
   </div>
 
