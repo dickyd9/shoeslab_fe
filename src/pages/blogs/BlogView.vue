@@ -103,30 +103,47 @@
   const backToList = () => {
     router.back()
   }
+
+  const example_image_upload_handler = (
+    blobInfo: any,
+    success: any,
+    failure: any,
+    progress: any
+  ) => {
+    let xhr: XMLHttpRequest, formData
+
+    xhr = new XMLHttpRequest()
+    xhr.withCredentials = false
+    xhr.open("POST", `${import.meta.env.VITE_API_URL}/v1/images`)
+
+    xhr.upload.onprogress = function (e) {
+      progress((e.loaded / e.total) * 100)
+    }
+
+    xhr.onload = function () {
+      let json
+
+      if (xhr.status != 200) {
+        failure("HTTP Error: " + xhr.status)
+        return
+      }
+
+      json = JSON.parse(xhr.responseText || "")
+
+      success(json.data.path)
+    }
+
+    formData = new FormData()
+    formData.append("path", blobInfo.blob(), blobInfo.filename())
+
+    xhr.send(formData)
+  }
 </script>
 
 <template>
   <div class="flex flex-col items-center mt-8 intro-y sm:flex-row">
     <h2 class="mr-auto text-lg font-medium">Add New Blog</h2>
     <div class="flex w-full mt-4 sm:w-auto sm:mt-0">
-      <!-- <Menu class="mr-2">
-        <Menu.Button :as="Button" class="flex items-center !box">
-          English <Lucide icon="ChevronDown" class="w-4 h-4 ml-2" />
-        </Menu.Button>
-        <Menu.Items class="w-40">
-          <Menu.Item>
-            <Lucide icon="Activity" class="w-4 h-4 mr-2" />
-            <span class="truncate">English</span>
-          </Menu.Item>
-          <Menu.Item>
-            <Lucide icon="Activity" class="w-4 h-4 mr-2" />
-            <span class="truncate">Indonesian</span>
-          </Menu.Item>
-        </Menu.Items>
-      </Menu>
-      <Button type="button" class="flex items-center ml-auto mr-2 !box sm:ml-0">
-        <Lucide icon="Eye" class="w-4 h-4 mr-2" /> Preview
-      </Button> -->
       <Button @click="backToList" variant="primary" class="mr-2 shadow-md">
         <Lucide icon="ArrowLeft" class="w-4 h-4 mr-2" />
         Back
@@ -138,7 +155,6 @@
           variant="primary"
           class="flex items-center shadow-md">
           Save
-          <!-- <Lucide icon="ChevronDown" class="w-4 h-4 ml-2" /> -->
         </Menu.Button>
       </Menu>
     </div>
@@ -261,6 +277,10 @@
                     height: 500,
                     menubar: false,
                     plugins: 'lists link image emoticons',
+                    automatic_uploads: true,  
+                    convert_urls: false,
+                    images_upload_handler: example_image_upload_handler,
+                    images_upload_base_path: '/assets/images',
                     toolbar:
                       'styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist | link image emoticons',
                   }" />

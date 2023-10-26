@@ -146,6 +146,41 @@
 
     loadImage()
   })
+
+  const example_image_upload_handler = (
+    blobInfo: any,
+    success: any,
+    failure: any,
+    progress: any
+  ) => {
+    let xhr: XMLHttpRequest, formData
+
+    xhr = new XMLHttpRequest()
+    xhr.withCredentials = false
+    xhr.open("POST", `${import.meta.env.VITE_API_URL}/v1/images`)
+
+    xhr.upload.onprogress = function (e) {
+      progress((e.loaded / e.total) * 100)
+    }
+
+    xhr.onload = function () {
+      let json
+
+      if (xhr.status != 200) {
+        failure("HTTP Error: " + xhr.status)
+        return
+      }
+
+      json = JSON.parse(xhr.responseText || "")
+
+      success(json.data.path)
+    }
+
+    formData = new FormData()
+    formData.append("path", blobInfo.blob(), blobInfo.filename())
+
+    xhr.send(formData)
+  }
 </script>
 
 <template>
@@ -285,6 +320,10 @@
                     height: 500,
                     menubar: false,
                     plugins: 'lists link image emoticons',
+                    automatic_uploads: true,
+                    convert_urls: false,
+                    images_upload_handler: example_image_upload_handler,
+                    images_upload_base_path: '/assets/images',
                     toolbar:
                       'styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist | link image emoticons',
                   }" />
