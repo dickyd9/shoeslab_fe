@@ -22,16 +22,16 @@ export const useAuthStore = defineStore({
       returnUrl: null,
     } as AuthStoreState),
   actions: {
-    async login(email: string, password: string) {
+    async login(username: string, password: string) {
       const res = await fetchWrapper.post(`${baseUrl}/signIn`, {
-        email,
+        username,
         password,
       })
       // store access_token details and jwt in local storage to keep access_token logged in between page refreshes
       localStorage.setItem("access_token", JSON.stringify(res))
 
       // redirect to previous url or default to home page
-      router.push(this.returnUrl || "/dashboard")
+      router.push(this.returnUrl || "/product-list")
     },
     async getUserWithToken() {
       // Lakukan permintaan untuk mendapatkan data pengguna dengan token

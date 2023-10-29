@@ -8,13 +8,15 @@
   import Lucide from "../../base-components/Lucide"
   import { Menu } from "../../base-components/Headless"
 
-  import { onMounted, ref } from "vue"
+  import { onMounted, reactive, ref } from "vue"
   import fetchWrapper from "../../helper/fetch-wrapper"
 
   interface Users {
     id: number
+    username: string
     fullname: string
     email: string
+    password: string
     role: number
     address: string
   }
@@ -28,6 +30,13 @@
   }
 
   const dialog = ref(false)
+  let isEdit = ref(false)
+  let editData = reactive({})
+  const editUser = (user: any) => {
+    dialog.value = true
+    editData = user
+    isEdit.value = true
+  }
 
   onMounted(() => {
     loadUser()
@@ -39,7 +48,12 @@
   <div class="grid grid-cols-12 gap-6 mt-5">
     <div
       class="flex flex-wrap items-center col-span-12 mt-2 intro-y sm:flex-nowrap">
-      <Button @click="dialog = true" variant="primary" class="mr-2 shadow-md"> Add New User </Button>
+      <Button @click="() => {
+        dialog = true
+        isEdit = false
+      }" variant="primary" class="mr-2 shadow-md">
+        Add New User
+      </Button>
       <!-- <div class="hidden mx-auto md:block text-slate-500">
         Showing 1 to 10 of 150 entries
       </div>
@@ -75,8 +89,9 @@
               <Lucide icon="MoreHorizontal" class="w-5 h-5 text-slate-500" />
             </Menu.Button>
             <Menu.Items class="w-40">
-              <Menu.Item>
-                <Lucide icon="Edit2" class="w-4 h-4 mr-2" /> Edit
+              <Menu.Item @click="editUser(user)">
+                <Lucide icon="Edit2" class="w-4 h-4 mr-2" />
+                Edit
               </Menu.Item>
               <Menu.Item>
                 <Lucide icon="Trash" class="w-4 h-4 mr-2" /> Delete
@@ -139,11 +154,12 @@
 
   <DialogUser
     :show-dialog="dialog"
+    :editData="editData"
+    :isEdit="isEdit"
     @update:close="
       () => {
         dialog = false
         loadUser()
       }
-    "
-  />
+    " />
 </template>

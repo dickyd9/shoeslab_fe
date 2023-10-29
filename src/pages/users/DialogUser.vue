@@ -20,16 +20,19 @@
   const emits = defineEmits()
   const props = defineProps({
     showDialog: Boolean,
+    isEdit: Boolean,
     editData: Object,
   })
 
   const closeModal = () => {
+    Object.assign(form, initialFormData)
     emits("update:close", false)
   }
 
   const sendButtonRef = ref(null)
 
   let form = reactive({
+    username: null as string | null,
     email: null as string | null,
     password: null,
     confirmPassword: null,
@@ -41,42 +44,56 @@
   const initialFormData = { ...form }
 
   const saveData = async () => {
-    // let formData = new FormData()
-
-    // if (form.productImage !== null) {
-    //   const file = new File([form.productImage], "nama_file.jpg", {
-    //     type: "image/jpeg",
-    //   })
-    //   formData.append("productImage", file)
-    // }
-
-    // formData.append("productName", String(form.productName))
-    // formData.append("productPrice", String(form.productPrice)) // Anda perlu mengonversi ke string
-    // formData.append("productLink", String(form.productLink))
-    if (form.password !== form.confirmPassword) {
-      createToast("Password tidak sama", {
-        type: "danger",
-        timeout: 2000,
-      })
+    if (props.isEdit) {
+      if (form.password !== form.confirmPassword) {
+        createToast("Password tidak sama", {
+          type: "danger",
+          timeout: 2000,
+        })
+      } else {
+        await fetchWrapper
+          .put(`editUser/${props.editData?.id}`, form)
+          .then((res: any) => {
+            createToast(res.message, {
+              type: "success",
+              timeout: 2000,
+            })
+            closeModal()
+            Object.assign(form, initialFormData)
+          })
+          .catch((err: any) => {
+            createToast(err.message, {
+              type: "danger",
+              timeout: 2000,
+            })
+          })
+      }
     } else {
-      await fetchWrapper
-        .post("signUp", form)
-        .then((res: any) => {
-          createToast(res.message, {
-            type: "success",
-            timeout: 2000,
+      if (form.password !== form.confirmPassword) {
+        createToast("Password tidak sama", {
+          type: "danger",
+          timeout: 2000,
+        })
+      } else {
+        await fetchWrapper
+          .post("signUp", form)
+          .then((res: any) => {
+            createToast(res.message, {
+              type: "success",
+              timeout: 2000,
+            })
+            Object.assign(form, initialFormData)
           })
-          Object.assign(form, initialFormData)
-        })
-        .catch((err: any) => {
-          createToast(err.message, {
-            type: "danger",
-            timeout: 2000,
+          .catch((err: any) => {
+            createToast(err.message, {
+              type: "danger",
+              timeout: 2000,
+            })
           })
-        })
-        .finally(() => {
-          closeModal()
-        })
+          .finally(() => {
+            closeModal()
+          })
+      }
     }
   }
 
@@ -85,9 +102,20 @@
     confirmPassword: false,
   })
 
-  // watch(() => {
-
-  // })
+  watch(
+    () => props.editData,
+    (newValue) => {
+      if (newValue) {
+        form.fullname = newValue.fullname
+        form.username = newValue.username
+        form.email = newValue.email
+        form.password = newValue.password
+        form.fullname = newValue.fullname
+        form.role = newValue.role
+        form.address = newValue.address
+      }
+    }
+  )
 </script>
 
 <template>
@@ -98,7 +126,9 @@
     :initialFocus="sendButtonRef">
     <Dialog.Panel>
       <Dialog.Title>
-        <h2 class="mr-auto text-base font-medium">Add User</h2>
+        <h2 class="mr-auto text-base font-medium">
+          {{ isEdit ? "Edit User" : "Add User" }}
+        </h2>
       </Dialog.Title>
       <Dialog.Description class="gap-4 gap-y-3">
         <!-- <div class="w-1/2 col-span-12 sm:col-span-12">
@@ -111,6 +141,14 @@
               id="productName"
               type="text"
               placeholder="Nama" />
+          </div>
+          <div class="col-span-12 sm:col-span-12">
+            <FormLabel htmlFor="modal-form-1">Username</FormLabel>
+            <FormInput
+              v-model="form.username"
+              id="username"
+              type="text"
+              placeholder="Username" />
           </div>
           <div class="col-span-12 sm:col-span-12">
             <FormLabel htmlFor="modal-form-2">Email</FormLabel>

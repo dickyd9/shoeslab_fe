@@ -16,11 +16,11 @@ export interface SideMenuState {
 export const useSideMenuStore = defineStore("sideMenu", {
   state: (): SideMenuState => ({
     menu: [
-      {
-        icon: "Home",
-        pageName: "dashboard",
-        title: "Dashboard",
-      },
+      // {
+      //   icon: "Home",
+      //   pageName: "dashboard",
+      //   title: "Dashboard",
+      // },
       {
         icon: "ShoppingBag",
         pageName: "product-list",

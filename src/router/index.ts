@@ -100,11 +100,11 @@ const routes = [
     component: SideMenu,
     meta: { requiresAuth: true },
     children: [
-      {
-        path: "dashboard",
-        name: "dashboard",
-        component: DashboardOverview1,
-      },
+      // {
+      //   path: "dashboard",
+      //   name: "dashboard",
+      //   component: DashboardOverview1,
+      // },
       {
         path: "edit-blog",
         name: "detail-blog-edit",
@@ -1210,7 +1210,7 @@ router.beforeEach(
       })
       return next({ path: "/login" })
     } else if (isHide && loggedIn) {
-      return next({ path: "/dashboard" })
+      return next({ path: "/product-list" })
     }
     next()
   }

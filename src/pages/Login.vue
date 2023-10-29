@@ -13,7 +13,7 @@
   const authStore = useAuthStore()
 
   interface FormInput {
-    email?: string
+    username?: string
     password?: string
   }
 
@@ -21,7 +21,7 @@
 
   const onSubmit = async () => {
     try {
-      const res = await authStore.login(formData.email, formData.password)
+      const res = await authStore.login(formData.username, formData.password)
       await authStore.getUserWithToken()
       createToast("Login Success", {
         type: "success",
@@ -99,10 +99,10 @@
           <div class="grid items-center justify-items-center content-center">
             <div class="intro-x">
               <FormInput
-                v-model="FormInput.email"
+                v-model="FormInput.username"
                 type="text"
                 class="block px-4 py-3 intro-x login__input min-w-full xl:min-w-[350px]"
-                placeholder="Email" />
+                placeholder="Username" />
               <div style="position: relative">
                 <FormInput
                   v-model="FormInput.password"
