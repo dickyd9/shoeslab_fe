@@ -39,7 +39,7 @@
 <template>
   <!-- BEGIN: Top Bar -->
   <div
-    class="h-[67px] z-[51] flex items-center relative border-b border-slate-200">
+    class="h-[67px] z-[51] flex items-center justify-end relative border-b border-slate-200">
     <!-- BEGIN: Breadcrumb -->
     <Breadcrumb class="hidden mr-auto -intro-x sm:flex">
       <Breadcrumb.Link>Dashboard</Breadcrumb.Link>

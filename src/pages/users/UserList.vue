@@ -6,10 +6,11 @@
   import Pagination from "../../base-components/Pagination"
   import { FormInput, FormSelect } from "../../base-components/Form"
   import Lucide from "../../base-components/Lucide"
-  import { Menu } from "../../base-components/Headless"
+  import { Dialog, Menu } from "../../base-components/Headless"
 
   import { onMounted, reactive, ref } from "vue"
   import fetchWrapper from "../../helper/fetch-wrapper"
+  import { createToast } from "mosha-vue-toastify"
 
   interface Users {
     id: number
@@ -38,6 +39,30 @@
     isEdit.value = true
   }
 
+  const deleteConfirmationModal = ref(false)
+  const setDeleteConfirmationModal = (value: boolean) => {
+    deleteConfirmationModal.value = value
+  }
+
+  const dataUser = ref<Users | null>(null)
+  const deleteUser = async () => {
+    await fetchWrapper
+      .delete(`deleteUser/${dataUser.value?.id}`)
+      .then((res) => {
+        createToast(res.message, {
+          type: "success",
+          timeout: 2000,
+        })
+        deleteConfirmationModal.value = false
+        loadUser()
+      })
+  }
+
+  const deleteButtonRef = ref(null)
+  const deleteDialog = (value: any) => {
+    dataUser.value = value
+    deleteConfirmationModal.value = true
+  }
   onMounted(() => {
     loadUser()
   })
@@ -48,10 +73,15 @@
   <div class="grid grid-cols-12 gap-6 mt-5">
     <div
       class="flex flex-wrap items-center col-span-12 mt-2 intro-y sm:flex-nowrap">
-      <Button @click="() => {
-        dialog = true
-        isEdit = false
-      }" variant="primary" class="mr-2 shadow-md">
+      <Button
+        @click="
+          () => {
+            dialog = true
+            isEdit = false
+          }
+        "
+        variant="primary"
+        class="mr-2 shadow-md">
         Add New User
       </Button>
       <!-- <div class="hidden mx-auto md:block text-slate-500">
@@ -93,7 +123,7 @@
                 <Lucide icon="Edit2" class="w-4 h-4 mr-2" />
                 Edit
               </Menu.Item>
-              <Menu.Item>
+              <Menu.Item @click="deleteDialog(user)">
                 <Lucide icon="Trash" class="w-4 h-4 mr-2" /> Delete
               </Menu.Item>
             </Menu.Items>
@@ -162,4 +192,46 @@
         loadUser()
       }
     " />
+
+  <!-- BEGIN: Delete Confirmation Modal -->
+  <Dialog
+    :open="deleteConfirmationModal"
+    @close="
+      () => {
+        setDeleteConfirmationModal(false)
+      }
+    ">
+    <Dialog.Panel>
+      <div class="p-5 text-center">
+        <Lucide icon="XCircle" class="w-16 h-16 mx-auto mt-3 text-danger" />
+        <div class="mt-5 text-3xl">Are you sure?</div>
+        <div class="mt-2 text-slate-500">
+          Do you really want to delete these records? <br />
+          This process cannot be undone.
+        </div>
+      </div>
+      <div class="px-5 pb-8 text-center">
+        <Button
+          variant="outline-secondary"
+          type="button"
+          @click="
+            () => {
+              setDeleteConfirmationModal(false)
+            }
+          "
+          class="w-24 mr-1">
+          Cancel
+        </Button>
+        <Button
+          variant="danger"
+          type="button"
+          class="w-24"
+          @click="deleteUser"
+          ref="deleteButtonRef">
+          Delete
+        </Button>
+      </div>
+    </Dialog.Panel>
+  </Dialog>
+  <!-- END: Delete Confirmation Modal -->
 </template>
