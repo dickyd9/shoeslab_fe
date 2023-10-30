@@ -10,12 +10,16 @@ import "@vueup/vue-quill/dist/vue-quill.snow.css"
 
 import filters from "./helper/filters"
 import { useResetForm } from "./stores/reset.form"
+import piniaPersist from 'pinia-plugin-persist'
 
 const app = createApp(App)
 
+const pinia = createPinia()
+pinia.use(piniaPersist)
+
 app.component("QuillEditor", QuillEditor)
 app.use(router)
-app.use(createPinia())
+app.use(pinia)
 app.use(moshaToast)
 app.config.globalProperties.$filters = filters
 app.config.globalProperties.$useResetForm = useResetForm //usage: const { formData, resetForm } = $useResetForm(initialFormData)

@@ -79,4 +79,7 @@ export const useAuthStore = defineStore({
       }
     },
   },
+  persist: {
+    enabled: true,
+  },
 })
