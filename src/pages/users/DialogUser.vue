@@ -9,13 +9,23 @@
   import { Menu, Dialog } from "../../base-components/Headless"
   import Button from "../../base-components/Button"
   import Dropzone, { DropzoneElement } from "../../base-components/Dropzone"
-  import { onMounted, reactive, ref, watch } from "vue"
+  import { onMounted, reactive, ref, toRefs, watch } from "vue"
   import fetchWrapper from "../../helper/fetch-wrapper"
   import Lucide from "../../base-components/Lucide"
   import { createToast } from "mosha-vue-toastify"
 
   import vueFilePond from "vue-filepond"
   import "filepond/dist/filepond.min.css"
+
+  import {
+    required,
+    minLength,
+    maxLength,
+    email,
+    url,
+    integer,
+  } from "@vuelidate/validators"
+  import useVuelidate from "@vuelidate/core"
 
   const emits = defineEmits()
   const props = defineProps({
@@ -25,6 +35,7 @@
   })
 
   const closeModal = () => {
+    validate.value.$reset()
     Object.assign(form, initialFormData)
     emits("update:close", false)
   }
@@ -43,56 +54,83 @@
 
   const initialFormData = { ...form }
 
+  const rules = {
+    username: {
+      required,
+    },
+    email: {
+      required,
+      email,
+    },
+    password: {
+      required,
+    },
+    confirmPassword: {
+      required,
+    },
+    fullname: {
+      required,
+    },
+  }
+  const validate = useVuelidate(rules, toRefs(form))
+
   const saveData = async () => {
-    if (props.isEdit) {
-      if (form.password !== form.confirmPassword) {
-        createToast("Password tidak sama", {
-          type: "danger",
-          timeout: 2000,
-        })
-      } else {
-        await fetchWrapper
-          .put(`editUser/${props.editData?.id}`, form)
-          .then((res: any) => {
-            createToast(res.message, {
-              type: "success",
-              timeout: 2000,
-            })
-            closeModal()
-            Object.assign(form, initialFormData)
-          })
-          .catch((err: any) => {
-            createToast(err.message, {
-              type: "danger",
-              timeout: 2000,
-            })
-          })
-      }
+    validate.value.$touch()
+    if (validate.value.$invalid) {
+      createToast("Form must be fill!", {
+        type: "danger",
+        timeout: 2000,
+      })
     } else {
-      if (form.password !== form.confirmPassword) {
-        createToast("Password tidak sama", {
-          type: "danger",
-          timeout: 2000,
-        })
+      if (props.isEdit) {
+        if (form.password !== form.confirmPassword) {
+          createToast("Password tidak sama", {
+            type: "danger",
+            timeout: 2000,
+          })
+        } else {
+          await fetchWrapper
+            .put(`editUser/${props.editData?.id}`, form)
+            .then((res: any) => {
+              createToast(res.message, {
+                type: "success",
+                timeout: 2000,
+              })
+              closeModal()
+              Object.assign(form, initialFormData)
+            })
+            .catch((err: any) => {
+              createToast(err.message, {
+                type: "danger",
+                timeout: 2000,
+              })
+            })
+        }
       } else {
-        await fetchWrapper
-          .post("signUp", form)
-          .then((res: any) => {
-            createToast(res.message, {
-              type: "success",
-              timeout: 2000,
+        if (form.password !== form.confirmPassword) {
+          createToast("Password tidak sama", {
+            type: "danger",
+            timeout: 2000,
+          })
+        } else {
+          await fetchWrapper
+            .post("signUp", form)
+            .then((res: any) => {
+              createToast(res.message, {
+                type: "success",
+                timeout: 2000,
+              })
+              closeModal()
+              validate.value.$reset()
+              Object.assign(form, initialFormData)
             })
-            Object.assign(form, initialFormData)
-          })
-          .catch((err: any) => {
-            createToast(err.message, {
-              type: "danger",
-              timeout: 2000,
+            .catch((err: any) => {
+              createToast(err.message, {
+                type: "danger",
+                timeout: 2000,
+              })
             })
-          })
-          .finally(() => {
-            closeModal()
-          })
+        }
       }
     }
   }
@@ -137,35 +175,79 @@
           <div class="col-span-12 sm:col-span-12">
             <FormLabel htmlFor="modal-form-1">Nama</FormLabel>
             <FormInput
-              v-model="form.fullname"
-              id="productName"
+              v-model.trim="validate.fullname.$model"
+              id="fullname"
               type="text"
-              placeholder="Nama" />
+              placeholder="Product Name"
+              :class="{
+                'border-danger': validate.fullname.$error,
+              }" />
+            <template v-if="validate.fullname.$error">
+              <div
+                v-for="(error, index) in validate.fullname.$errors"
+                :key="index"
+                class="mt-2 text-danger">
+                {{ error.$message }}
+              </div>
+            </template>
           </div>
           <div class="col-span-12 sm:col-span-12">
             <FormLabel htmlFor="modal-form-1">Username</FormLabel>
             <FormInput
-              v-model="form.username"
+              v-model.trim="validate.username.$model"
               id="username"
               type="text"
-              placeholder="Username" />
+              placeholder="Username"
+              :class="{
+                'border-danger': validate.username.$error,
+              }" />
+            <template v-if="validate.username.$error">
+              <div
+                v-for="(error, index) in validate.username.$errors"
+                :key="index"
+                class="mt-2 text-danger">
+                {{ error.$message }}
+              </div>
+            </template>
           </div>
           <div class="col-span-12 sm:col-span-12">
             <FormLabel htmlFor="modal-form-2">Email</FormLabel>
             <FormInput
-              v-model="form.email"
+              v-model.trim="validate.email.$model"
               id="productPrice"
               type="text"
-              placeholder="Email" />
+              placeholder="Email"
+              :class="{
+                'border-danger': validate.email.$error,
+              }" />
+            <template v-if="validate.email.$error">
+              <div
+                v-for="(error, index) in validate.email.$errors"
+                :key="index"
+                class="mt-2 text-danger">
+                {{ error.$message }}
+              </div>
+            </template>
           </div>
           <div class="col-span-12 sm:col-span-12">
             <FormLabel htmlFor="modal-form-2">Password</FormLabel>
             <div style="position: relative">
               <FormInput
-                v-model="form.password"
+                v-model.trim="validate.password.$model"
                 id="productPrice"
                 :type="showPw.password ? 'text' : 'password'"
-                placeholder="Password" />
+                placeholder="Password"
+                :class="{
+                  'border-danger': validate.password.$error,
+                }" />
+              <template v-if="validate.password.$error">
+                <div
+                  v-for="(error, index) in validate.password.$errors"
+                  :key="index"
+                  class="mt-2 text-danger">
+                  {{ error.$message }}
+                </div>
+              </template>
               <button
                 @click="showPw.password = !showPw.password"
                 class="showPassword">
@@ -179,10 +261,21 @@
             <FormLabel htmlFor="modal-form-2">Confirm Password</FormLabel>
             <div style="position: relative">
               <FormInput
-                v-model="form.confirmPassword"
+                v-model.trim="validate.confirmPassword.$model"
                 id="productPrice"
                 :type="showPw.confirmPassword ? 'text' : 'password'"
-                placeholder="Confirm Password" />
+                placeholder="Confirm Password"
+                :class="{
+                  'border-danger': validate.confirmPassword.$error,
+                }" />
+              <template v-if="validate.confirmPassword.$error">
+                <div
+                  v-for="(error, index) in validate.confirmPassword.$errors"
+                  :key="index"
+                  class="mt-2 text-danger">
+                  {{ error.$message }}
+                </div>
+              </template>
               <button
                 @click="showPw.confirmPassword = !showPw.confirmPassword"
                 class="showPassword">
